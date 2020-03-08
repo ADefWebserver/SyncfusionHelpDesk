@@ -1,22 +1,54 @@
 ﻿@page "/administration"
-<h3>Administration</h3>
+@using SyncfusionHelpDesk.Data;
+@inherits OwningComponentBase<SyncfusionHelpDeskService>
 
 <AuthorizeView Roles="Administrators">
-    <p>You can only see this if you're an Administrator.</p>
+    <div>
+        <header>
+            <div class="module-title">
+                <div>HELP DESK TICKET ADMINISTRATION</div>
+            </div>
+        </header>
+        <div>
+            <EjsGrid ID="Grid" @ref="gridObj" DataSource="@colHelpDeskTickets" AllowPaging="true">
+                <GridEvents TValue="HelpDeskTickets"></GridEvents>
+                <GridColumns>
+                    <GridColumn IsPrimaryKey="true" HeaderText="ID #" TextAlign="@TextAlign.Left" Width="50">
+                        <Template Context="objHelpDeskTickets">
+                            <u>
+                                <span @onclick="@(e => onHelpDeskTicketClick(e, (objHelpDeskTickets as HelpDeskTickets).Id))">@((objHelpDeskTickets as HelpDeskTickets).Id)</span>
+                            </u>
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field=@nameof(HelpDeskTickets.TicketStatus)
+                                HeaderText="Status" TextAlign="@TextAlign.Left" Width="50"></GridColumn>
+                    <GridColumn Field=@nameof(HelpDeskTickets.TicketDate)
+                                HeaderText="Date" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
+                    <GridColumn Field=@nameof(HelpDeskTickets.TicketDescription)
+                                HeaderText="Description" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
+                    <GridColumn Field=@nameof(HelpDeskTickets.TicketRequesterEmail)
+                                HeaderText="Requester" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
+                </GridColumns>
+            </EjsGrid>
+        </div>
+    </div>
 </AuthorizeView>
-<AuthorizeView>
-    <!-- Show this section if the user is logged in -->
-    <Authorized>
-        <p>You are signed in and your name is @context.User.Identity.Name</p>
-    </Authorized>
-    <!-- Show this section if the user is not logged in -->
-    <NotAuthorized>
-        <p>You're not signed in.</p>
-    </NotAuthorized>
-</AuthorizeView>
+
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
+    EjsGrid<HelpDeskTickets> gridObj;
+    List<HelpDeskTickets> colHelpDeskTickets;
 
+    protected override void OnInitialized()
+    {
+        colHelpDeskTickets = @Service.GetHelpDeskTickets().OrderByDescending(x => x.Id).ToList();
+    }
 
+    private void onHelpDeskTicketClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args, int Id)
+    {
+        this.gridObj.SelectRow(Id - 1);
+        //this.isPatientClicked = true;
+        //this.GridEditDialog = true;
+    }
 }
