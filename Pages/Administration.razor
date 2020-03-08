@@ -1,0 +1,22 @@
+﻿@page "/administration"
+<h3>Administration</h3>
+
+<AuthorizeView Roles="Administrators">
+    <p>You can only see this if you're an Administrator.</p>
+</AuthorizeView>
+<AuthorizeView>
+    <!-- Show this section if the user is logged in -->
+    <Authorized>
+        <p>You are signed in and your name is @context.User.Identity.Name</p>
+    </Authorized>
+    <!-- Show this section if the user is not logged in -->
+    <NotAuthorized>
+        <p>You're not signed in.</p>
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+
+}

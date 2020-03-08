@@ -1,0 +1,46 @@
+﻿@page "/"
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Components.Authorization;
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+
+@if (CurrentUser.IsInRole(ADMINISTRATION_ROLE))
+{
+    <p>You are an Administrator named: <b>@CurrentUser.Identity.Name</b></p>
+}
+
+<EjsCalendar TValue="DateTime"></EjsCalendar>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
+    string ADMINISTRATION_ROLE = "Administrators";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // ensure there is a ADMINISTRATION_ROLE
+        var RoleResult = await _RoleManager.FindByNameAsync(ADMINISTRATION_ROLE);
+        if (RoleResult == null)
+        {
+            // Create ADMINISTRATION_ROLE Role
+            await _RoleManager.CreateAsync(new IdentityRole(ADMINISTRATION_ROLE));
+        }
+
+        var user = await _UserManager.FindByNameAsync("Admin@BlazorHelpWebsite.com");
+
+        if (user != null)
+        {
+            // Is user in administrator role?
+            var UserResult = await _UserManager.IsInRoleAsync(user, ADMINISTRATION_ROLE);
+            if (!UserResult)
+            {
+                // Put admin in Administrator role
+                await _UserManager.AddToRoleAsync(user, ADMINISTRATION_ROLE);
+            }
+        }
+
+        CurrentUser = (await authenticationStateTask).User;
+    }
+}
