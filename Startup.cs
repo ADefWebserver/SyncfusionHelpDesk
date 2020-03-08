@@ -49,6 +49,13 @@ namespace SyncfusionHelpDesk
 
             // Syncfusion Support
             services.AddSyncfusionBlazor();
+
+            // To access HelpDesk tables
+            services.AddDbContext<SyncfusionHelpDeskContext>(options =>
+            options.UseSqlServer(
+                Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<SyncfusionHelpDeskService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -105,7 +105,6 @@ namespace SyncfusionHelpDesk.Data
             }
         }
 
-
         public Task<bool> DeleteHelpDeskTicketsAsync(HelpDeskTickets DeleteHelpDeskTickets)
         {
             var ExistingTicket =
