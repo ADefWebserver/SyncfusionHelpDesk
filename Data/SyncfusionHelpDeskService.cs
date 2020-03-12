@@ -22,11 +22,11 @@ namespace SyncfusionHelpDesk.Data
                 .AsNoTracking();
         }
 
-        public async Task<HelpDeskTickets> GetHelpDeskTicketAsync(int HelpDeskTicketId)
+        public async Task<HelpDeskTickets> GetHelpDeskTicketAsync(string HelpDeskTicketGuid)
         {
             var ExistingTicket = await _context.HelpDeskTickets
                 .Include(x => x.HelpDeskTicketDetails)
-                .Where(x => x.Id == HelpDeskTicketId).AsNoTracking().FirstOrDefaultAsync();
+                .Where(x => x.TicketGuid == HelpDeskTicketGuid).AsNoTracking().FirstOrDefaultAsync();
 
             return ExistingTicket;
         }

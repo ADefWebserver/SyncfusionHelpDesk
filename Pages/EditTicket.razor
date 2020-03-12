@@ -1,9 +1,56 @@
-﻿<h3>EditTicket</h3>
-<b>TicketGuid:</b> @TicketGuid
+﻿@using System.Security.Claims;
+@using SyncfusionHelpDesk.Data;
+@inherits OwningComponentBase<SyncfusionHelpDeskService>
+
+<div>
+    <EjsDropDownList TItem="HelpDeskStatus" TValue="string" PopupHeight="230px" Index=0
+                     Placeholder="Ticket Status" DataSource="@HelpDeskStatus.Statuses"
+                     FloatLabelType="@FloatLabelType.Always"
+                     @bind-Value="@objHelpDeskTicket.TicketStatus">
+        <DropDownListFieldSettings Text="Text" Value="ID"></DropDownListFieldSettings>
+    </EjsDropDownList>
+</div>
+<div>
+    <EjsDatePicker ID="TicketDate" Placeholder="Ticket Date" FloatLabelType="@FloatLabelType.Always"
+                   @bind-Value="@objHelpDeskTicket.TicketDate"
+                   Max="DateTime.Now" ShowClearButton="false"></EjsDatePicker>
+</div>
+<div>
+    <EjsTextBox Placeholder="Ticket Description" FloatLabelType="@FloatLabelType.Always"
+                @bind-Value="@objHelpDeskTicket.TicketDescription"></EjsTextBox>
+</div>
+<div>
+    <EjsTextBox Placeholder="Requester Email" FloatLabelType="@FloatLabelType.Always"
+                @bind-Value="@objHelpDeskTicket.TicketRequesterEmail"></EjsTextBox>
+</div>
+<br />
+<br />
+<div class="e-footer-content">
+    <div class="button-container">
+        <button type="submit" class="e-btn e-normal e-primary">Save</button>
+    </div>
+</div>
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
     [Parameter]
     public string TicketGuid { get; set; }
+
+    ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
+    HelpDeskTickets objHelpDeskTicket = new HelpDeskTickets();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the current user
+        CurrentUser = (await authenticationStateTask).User;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (TicketGuid != "")
+        {
+            objHelpDeskTicket = await @Service.GetHelpDeskTicketAsync(TicketGuid);
+        }
+    }
 }
