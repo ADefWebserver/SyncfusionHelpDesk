@@ -2,53 +2,59 @@
 @using SyncfusionHelpDesk.Data;
 @inherits OwningComponentBase<SyncfusionHelpDeskService>
 
-<AuthorizeView Roles="Administrators">
-    <div>
-        <header>
-            <div class="module-title">
-                <div>HELP DESK TICKET ADMINISTRATION</div>
-            </div>
-        </header>
+    <AuthorizeView Roles="Administrators">
         <div>
-            <EjsGrid ID="Grid" @ref="gridObj" DataSource="@colHelpDeskTickets" AllowPaging="true">
-                <GridEvents TValue="HelpDeskTickets"></GridEvents>
-                <GridColumns>
-                    <GridColumn IsPrimaryKey="true" HeaderText="ID #" TextAlign="@TextAlign.Left" Width="50">
-                        <Template Context="objHelpDeskTickets">
-                            <u>
-                                <span @onclick="@(e => onHelpDeskTicketClick(e, (objHelpDeskTickets as HelpDeskTickets).Id))">@((objHelpDeskTickets as HelpDeskTickets).Id)</span>
-                            </u>
-                        </Template>
-                    </GridColumn>
-                    <GridColumn Field=@nameof(HelpDeskTickets.TicketStatus)
-                                HeaderText="Status" TextAlign="@TextAlign.Left" Width="50"></GridColumn>
-                    <GridColumn Field=@nameof(HelpDeskTickets.TicketDate)
-                                HeaderText="Date" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
-                    <GridColumn Field=@nameof(HelpDeskTickets.TicketDescription)
-                                HeaderText="Description" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
-                    <GridColumn Field=@nameof(HelpDeskTickets.TicketRequesterEmail)
-                                HeaderText="Requester" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
-                </GridColumns>
-            </EjsGrid>
+            <header>
+                <div class="module-title">
+                    <div>HELP DESK TICKET ADMINISTRATION</div>
+                </div>
+            </header>
+            <div id="target" style="height: 500px;">
+                <EjsGrid ID="Grid" @ref="gridObj" DataSource="@colHelpDeskTickets" AllowPaging="true">
+                    <GridEvents CommandClicked="OnCommandClicked" TValue="HelpDeskTickets"></GridEvents>
+                    <GridColumns>
+                        <GridColumn HeaderText="" TextAlign="TextAlign.Left" Width="75">
+                            <GridCommandColumns>
+                                <GridCommandColumn ButtonOption="@(new CommandButtonOptions() { Content = "Edit" })"></GridCommandColumn>
+                            </GridCommandColumns>
+                        </GridColumn>
+                        <GridColumn IsPrimaryKey="true" Field=@nameof(HelpDeskTickets.Id)
+                                    HeaderText="ID #" TextAlign="@TextAlign.Left" Width="50"></GridColumn>
+                        <GridColumn Field=@nameof(HelpDeskTickets.TicketStatus)
+                                    HeaderText="Status" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
+                        <GridColumn Field=@nameof(HelpDeskTickets.TicketDate)
+                                    HeaderText="Date" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
+                        <GridColumn Field=@nameof(HelpDeskTickets.TicketDescription)
+                                    HeaderText="Description" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
+                        <GridColumn Field=@nameof(HelpDeskTickets.TicketRequesterEmail)
+                                    HeaderText="Requester" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
+                    </GridColumns>
+                </EjsGrid>
+            </div>
         </div>
-    </div>
-</AuthorizeView>
-
+        <EjsDialog Target="#target" Width="500px" Height="500px" IsModal="true" ShowCloseIcon="true" @bind-Visible="EditDialogVisibility">
+            <DialogTemplates>
+                <Header> EDIT TICKET </Header>
+                <Content><EditTicket TicketGuid="@SelectedTicketGuid" /></Content>
+            </DialogTemplates>
+        </EjsDialog>
+    </AuthorizeView>
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     EjsGrid<HelpDeskTickets> gridObj;
     List<HelpDeskTickets> colHelpDeskTickets;
+    private string SelectedTicketGuid = "";
+    public bool EditDialogVisibility { get; set; } = false;
 
     protected override void OnInitialized()
     {
         colHelpDeskTickets = @Service.GetHelpDeskTickets().OrderByDescending(x => x.Id).ToList();
     }
 
-    private void onHelpDeskTicketClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args, int Id)
+    public void OnCommandClicked(CommandClickEventArgs<HelpDeskTickets> args)
     {
-        this.gridObj.SelectRow(Id - 1);
-        //this.isPatientClicked = true;
-        //this.GridEditDialog = true;
+        SelectedTicketGuid = args.RowData.TicketGuid;
+        this.EditDialogVisibility = true;
     }
 }

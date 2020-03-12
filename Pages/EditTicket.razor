@@ -1,0 +1,9 @@
+﻿<h3>EditTicket</h3>
+<b>TicketGuid:</b> @TicketGuid
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    [Parameter]
+    public string TicketGuid { get; set; }
+}
