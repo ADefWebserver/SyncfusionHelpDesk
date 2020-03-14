@@ -10,28 +10,34 @@ namespace SyncfusionHelpDesk.Data
     {
         private readonly SyncfusionHelpDeskContext _context;
 
-        public SyncfusionHelpDeskService(SyncfusionHelpDeskContext context)
+        public SyncfusionHelpDeskService(
+            SyncfusionHelpDeskContext context)
         {
             _context = context;
         }
 
-        public IQueryable<HelpDeskTickets> GetHelpDeskTickets()
+        public IQueryable<HelpDeskTickets>
+            GetHelpDeskTickets()
         {
             return _context.HelpDeskTickets
                 .Include(x => x.HelpDeskTicketDetails)
                 .AsNoTracking();
         }
 
-        public async Task<HelpDeskTickets> GetHelpDeskTicketAsync(string HelpDeskTicketGuid)
+        public async Task<HelpDeskTickets>
+            GetHelpDeskTicketAsync(string HelpDeskTicketGuid)
         {
             var ExistingTicket = await _context.HelpDeskTickets
                 .Include(x => x.HelpDeskTicketDetails)
-                .Where(x => x.TicketGuid == HelpDeskTicketGuid).AsNoTracking().FirstOrDefaultAsync();
+                .Where(x => x.TicketGuid == HelpDeskTicketGuid)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
 
             return ExistingTicket;
         }
 
-        public Task<HelpDeskTickets> CreateTicketAsync(HelpDeskTickets newHelpDeskTickets)
+        public Task<HelpDeskTickets>
+            CreateTicketAsync(HelpDeskTickets newHelpDeskTickets)
         {
             try
             {
@@ -47,11 +53,15 @@ namespace SyncfusionHelpDesk.Data
             }
         }
 
-        public Task<HelpDeskTicketDetails> CreateTicketDetailAsync(HelpDeskTicketDetails newHelpDeskTicketDetails)
+        public Task<HelpDeskTicketDetails>
+            CreateTicketDetailAsync(
+            HelpDeskTicketDetails newHelpDeskTicketDetails)
         {
             try
             {
-                _context.HelpDeskTicketDetails.Add(newHelpDeskTicketDetails);
+                _context.HelpDeskTicketDetails
+                    .Add(newHelpDeskTicketDetails);
+
                 _context.SaveChanges();
 
                 return Task.FromResult(newHelpDeskTicketDetails);
@@ -63,7 +73,9 @@ namespace SyncfusionHelpDesk.Data
             }
         }
 
-        public Task<bool> UpdateTicketAsync(HelpDeskTickets UpdatedHelpDeskTickets)
+        public Task<bool>
+            UpdateTicketAsync(
+            HelpDeskTickets UpdatedHelpDeskTickets)
         {
             try
             {
@@ -105,7 +117,9 @@ namespace SyncfusionHelpDesk.Data
             }
         }
 
-        public Task<bool> DeleteHelpDeskTicketsAsync(HelpDeskTickets DeleteHelpDeskTickets)
+        public Task<bool>
+            DeleteHelpDeskTicketsAsync(
+            HelpDeskTickets DeleteHelpDeskTickets)
         {
             var ExistingTicket =
                 _context.HelpDeskTickets
@@ -126,7 +140,9 @@ namespace SyncfusionHelpDesk.Data
             return Task.FromResult(true);
         }
 
-        public Task<bool> DeleteHelpDeskTicketDetailsAsync(HelpDeskTicketDetails DeleteHelpDeskTicketDetails)
+        public Task<bool>
+            DeleteHelpDeskTicketDetailsAsync(
+            HelpDeskTicketDetails DeleteHelpDeskTicketDetails)
         {
             var ExistingTicketDetails =
                 _context.HelpDeskTicketDetails

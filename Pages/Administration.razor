@@ -1,27 +1,29 @@
 ﻿@page "/administration"
 @using SyncfusionHelpDesk.Data;
-@using System.Collections.ObjectModel
 @inherits OwningComponentBase<SyncfusionHelpDeskService>
 
 <AuthorizeView Roles="Administrators">
     <div>
-        <header>
-            <div class="module-title">
-                <div>HELP DESK TICKET ADMINISTRATION</div>
-            </div>
-        </header>
         <div id="target" style="height: 500px;">
-            <EjsGrid ID="Grid" @ref="gridObj" DataSource="@colHelpDeskTickets" AllowPaging="true" AllowSorting="true">
+            <EjsGrid ID="Grid"
+                     @ref="gridObj"
+                     DataSource="@colHelpDeskTickets"
+                     AllowPaging="true"
+                     AllowSorting="true">
                 <GridPageSettings PageSize="5"></GridPageSettings>
-                <GridEvents CommandClicked="OnCommandClicked" TValue="HelpDeskTickets"></GridEvents>
+                <GridEvents CommandClicked="OnCommandClicked"
+                            TValue="HelpDeskTickets">
+                </GridEvents>
                 <GridColumns>
                     <GridColumn HeaderText="" TextAlign="TextAlign.Left" Width="75">
                         <GridCommandColumns>
-                            <GridCommandColumn ButtonOption="@(new CommandButtonOptions() { Content = "Edit" })"></GridCommandColumn>
+                            <GridCommandColumn ButtonOption="@(new CommandButtonOptions() 
+                                                               { Content = "Edit" })">
+                            </GridCommandColumn>
                         </GridCommandColumns>
                     </GridColumn>
                     <GridColumn IsPrimaryKey="true" Field=@nameof(HelpDeskTickets.Id)
-                                HeaderText="ID #" TextAlign="@TextAlign.Left" Width="50"></GridColumn>
+                                HeaderText="ID #" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
                     <GridColumn Field=@nameof(HelpDeskTickets.TicketStatus)
                                 HeaderText="Status" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
                     <GridColumn Field=@nameof(HelpDeskTickets.TicketDate)
@@ -41,7 +43,9 @@
             <Content><EditTicket SelectedTicket="@SelectedTicket" /></Content>
             <FooterTemplate>
                 <div class="button-container">
-                    <button type="submit" class="e-btn e-normal e-primary" @onclick="SaveTicket">Save</button>
+                    <button type="submit" 
+                            class="e-btn e-normal e-primary" 
+                            @onclick="SaveTicket">Save</button>
                 </div>
             </FooterTemplate>
         </DialogTemplates>
@@ -56,11 +60,6 @@
     public bool EditDialogVisibility { get; set; } = false;
 
     protected override void OnInitialized()
-    {
-        LoadTickets();
-    }
-
-    private void LoadTickets()
     {
         colHelpDeskTickets = @Service.GetHelpDeskTickets();
     }
