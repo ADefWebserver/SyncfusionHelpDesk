@@ -14,7 +14,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Syncfusion.EJ2.Blazor" Version="17.4.0.54" />
+    <PackageReference Include="Syncfusion.EJ2.Blazor" Version="17.4.0.55" />
     <PackageReference Include="System.Text.Json" Version="4.7.1" />
   </ItemGroup>
 

@@ -1,6 +1,9 @@
 # SyncfusionHelpDesk
 Sample Code for the Syncfusion Help Desk application featured in the Blazor Succinctly Book
 
+![Screenshot](SyncfusionHelpDesk.png)
+
+
 ### To Install
 
 1) Create Database and run scripts in !SQL directory
