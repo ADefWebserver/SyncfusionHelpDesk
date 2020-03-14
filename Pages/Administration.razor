@@ -65,7 +65,7 @@
         colHelpDeskTickets = @Service.GetHelpDeskTickets().ToList();
         if(gridObj != null)
         {
-            gridObj.DataBind();
+            gridObj.Refresh();
         }
     }
 
