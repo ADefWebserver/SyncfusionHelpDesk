@@ -9,7 +9,9 @@
                      @ref="gridObj"
                      DataSource="@colHelpDeskTickets"
                      AllowPaging="true"
-                     AllowSorting="true">
+                     AllowSorting="true"
+                     AllowResizing="true"
+                     AllowReordering="true">
                 <GridPageSettings PageSize="5"></GridPageSettings>
                 <GridEvents CommandClicked="OnCommandClicked"
                             TValue="HelpDeskTickets">
@@ -28,7 +30,7 @@
                         </GridCommandColumns>
                     </GridColumn>
                     <GridColumn IsPrimaryKey="true" Field=@nameof(HelpDeskTickets.Id)
-                                HeaderText="ID #" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
+                                HeaderText="ID #" TextAlign="@TextAlign.Left" Width="70"></GridColumn>
                     <GridColumn Field=@nameof(HelpDeskTickets.TicketStatus)
                                 HeaderText="Status" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
                     <GridColumn Field=@nameof(HelpDeskTickets.TicketDate)
