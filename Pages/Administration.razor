@@ -11,7 +11,7 @@
             </div>
         </header>
         <div id="target" style="height: 500px;">
-            <EjsGrid ID="Grid" @ref="gridObj" DataSource="@colHelpDeskTickets" AllowPaging="true">
+            <EjsGrid ID="Grid" @ref="gridObj" DataSource="@colHelpDeskTickets" AllowPaging="true" AllowSorting="true">
                 <GridPageSettings PageSize="5"></GridPageSettings>
                 <GridEvents CommandClicked="OnCommandClicked" TValue="HelpDeskTickets"></GridEvents>
                 <GridColumns>
@@ -75,9 +75,6 @@
     {
         var result = await @Service.UpdateTicketAsync(SelectedTicket);
         this.EditDialogVisibility = false;
-        if(gridObj != null)
-        {
-            gridObj.Refresh();
-        }
+        gridObj.Refresh();
     }
 }
