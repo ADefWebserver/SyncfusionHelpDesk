@@ -51,7 +51,7 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     EjsGrid<HelpDeskTickets> gridObj;
-    public List<HelpDeskTickets> colHelpDeskTickets { get; set; }
+    public IQueryable<HelpDeskTickets> colHelpDeskTickets { get; set; }
     private HelpDeskTickets SelectedTicket = new HelpDeskTickets();
     public bool EditDialogVisibility { get; set; } = false;
 
@@ -62,11 +62,7 @@
 
     private void LoadTickets()
     {
-        colHelpDeskTickets = @Service.GetHelpDeskTickets().ToList();
-        if(gridObj != null)
-        {
-            gridObj.Refresh();
-        }
+        colHelpDeskTickets = @Service.GetHelpDeskTickets();
     }
 
     public void OnCommandClicked(CommandClickEventArgs<HelpDeskTickets> args)
@@ -79,6 +75,9 @@
     {
         var result = await @Service.UpdateTicketAsync(SelectedTicket);
         this.EditDialogVisibility = false;
-        LoadTickets();
+        if(gridObj != null)
+        {
+            gridObj.Refresh();
+        }
     }
 }
