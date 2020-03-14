@@ -98,7 +98,27 @@ namespace SyncfusionHelpDesk.Data
                         UpdatedHelpDeskTickets.TicketRequesterEmail;
 
                     ExistingTicket.TicketStatus =
-                        UpdatedHelpDeskTickets.TicketStatus;
+                        UpdatedHelpDeskTickets.TicketStatus;                    
+
+                    // Insert any new TicketDetails
+                    if (UpdatedHelpDeskTickets.HelpDeskTicketDetails != null)
+                    {
+                        foreach (var item in 
+                            UpdatedHelpDeskTickets.HelpDeskTicketDetails)
+                        {
+                            if(item.Id == 0)
+                            {
+                                // Create New HelpDeskTicketDetails record
+                                HelpDeskTicketDetails newHelpDeskTicketDetails = new HelpDeskTicketDetails();
+                                newHelpDeskTicketDetails.HelpDeskTicketId = UpdatedHelpDeskTickets.Id;
+                                newHelpDeskTicketDetails.TicketDetailDate = DateTime.Now;
+                                newHelpDeskTicketDetails.TicketDescription = item.TicketDescription;
+
+                                _context.HelpDeskTicketDetails
+                                    .Add(newHelpDeskTicketDetails);
+                            }
+                        }
+                    }
 
                     _context.SaveChanges();
                 }
@@ -129,28 +149,6 @@ namespace SyncfusionHelpDesk.Data
             if (ExistingTicket != null)
             {
                 _context.HelpDeskTickets.Remove(ExistingTicket);
-                _context.SaveChanges();
-            }
-            else
-            {
-                return Task.FromResult(false);
-            }
-
-            return Task.FromResult(true);
-        }
-
-        public Task<bool>
-            DeleteHelpDeskTicketDetailsAsync(
-            HelpDeskTicketDetails DeleteHelpDeskTicketDetails)
-        {
-            var ExistingTicketDetails =
-                _context.HelpDeskTicketDetails
-                .Where(x => x.Id == DeleteHelpDeskTicketDetails.Id)
-                .FirstOrDefault();
-
-            if (ExistingTicketDetails != null)
-            {
-                _context.HelpDeskTicketDetails.Remove(ExistingTicketDetails);
                 _context.SaveChanges();
             }
             else

@@ -33,7 +33,33 @@
 </div>
 @if (SelectedTicket.HelpDeskTicketDetails != null)
 {
-    <p>Count: @SelectedTicket.HelpDeskTicketDetails.Count()</p>
+    @if (SelectedTicket.HelpDeskTicketDetails.Count() > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var TicketDetail in SelectedTicket.HelpDeskTicketDetails)
+                {
+                    <tr>
+                        <td>@TicketDetail.TicketDetailDate.ToShortDateString()</td>
+                        <td>@TicketDetail.TicketDescription</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <EjsTextBox Placeholder="NewHelp Desk Ticket Detail"
+                @bind-Value="@NewHelpDeskTicketDetail">
+    </EjsTextBox>
+    <EjsButton CssClass="e-small e-success"
+               @onclick="AddHelpDeskTicketDetail">
+        Add
+    </EjsButton>
 }
 <br />
 @code {
@@ -45,9 +71,26 @@
 
     ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
 
+    string NewHelpDeskTicketDetail = "";
+
     protected override async Task OnInitializedAsync()
     {
         // Get the current user
         CurrentUser = (await authenticationStateTask).User;
+    }
+
+    private void AddHelpDeskTicketDetail()
+    {
+        // Create New HelpDeskTicketDetails record
+        HelpDeskTicketDetails NewHelpDeskTicketDetails = new HelpDeskTicketDetails();
+        NewHelpDeskTicketDetails.HelpDeskTicketId = SelectedTicket.Id;
+        NewHelpDeskTicketDetails.TicketDetailDate = DateTime.Now;
+        NewHelpDeskTicketDetails.TicketDescription = NewHelpDeskTicketDetail;
+
+        // Add to collection
+        SelectedTicket.HelpDeskTicketDetails.Add(NewHelpDeskTicketDetails);
+
+        // Clear the Text Box
+        NewHelpDeskTicketDetail = "";
     }
 }
