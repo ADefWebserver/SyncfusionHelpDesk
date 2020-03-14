@@ -1,28 +1,40 @@
 ﻿@using System.Security.Claims;
 @using SyncfusionHelpDesk.Data;
+@using Syncfusion.EJ2.Blazor.DropDowns
 @inherits OwningComponentBase<SyncfusionHelpDeskService>
 
 <div>
-    <EjsDropDownList TItem="HelpDeskStatus" TValue="string" PopupHeight="230px" Index=0
-                     Placeholder="Ticket Status" DataSource="@HelpDeskStatus.Statuses"
+    <EjsDropDownList TItem="HelpDeskStatus"
+                     TValue="string" PopupHeight="230px" Index=0
+                     Placeholder="Ticket Status"
+                     DataSource="@HelpDeskStatus.Statuses"
                      FloatLabelType="@FloatLabelType.Always"
                      @bind-Value="@SelectedTicket.TicketStatus">
-        <DropDownListFieldSettings Text="Text" Value="ID"></DropDownListFieldSettings>
+        <DropDownListFieldSettings Text="Text"
+                                   Value="ID"></DropDownListFieldSettings>
     </EjsDropDownList>
 </div>
 <div>
-    <EjsDatePicker ID="TicketDate" Placeholder="Ticket Date" FloatLabelType="@FloatLabelType.Always"
+    <EjsDatePicker ID="TicketDate" Placeholder="Ticket Date"
+                   FloatLabelType="@FloatLabelType.Always"
                    @bind-Value="@SelectedTicket.TicketDate"
-                   Max="DateTime.Now" ShowClearButton="false"></EjsDatePicker>
+                   Max="DateTime.Now"
+                   ShowClearButton="false"></EjsDatePicker>
 </div>
 <div>
-    <EjsTextBox Placeholder="Ticket Description" FloatLabelType="@FloatLabelType.Always"
+    <EjsTextBox Placeholder="Ticket Description"
+                FloatLabelType="@FloatLabelType.Always"
                 @bind-Value="@SelectedTicket.TicketDescription"></EjsTextBox>
 </div>
 <div>
-    <EjsTextBox Placeholder="Requester Email" FloatLabelType="@FloatLabelType.Always"
+    <EjsTextBox Placeholder="Requester Email"
+                FloatLabelType="@FloatLabelType.Always"
                 @bind-Value="@SelectedTicket.TicketRequesterEmail"></EjsTextBox>
 </div>
+@if (SelectedTicket.HelpDeskTicketDetails != null)
+{
+    <p>Count: @SelectedTicket.HelpDeskTicketDetails.Count()</p>
+}
 <br />
 @code {
     [CascadingParameter]

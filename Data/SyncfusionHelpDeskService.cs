@@ -20,7 +20,6 @@ namespace SyncfusionHelpDesk.Data
             GetHelpDeskTickets()
         {
             return _context.HelpDeskTickets
-                .Include(x => x.HelpDeskTicketDetails)
                 .AsNoTracking();
         }
 

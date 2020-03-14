@@ -64,10 +64,11 @@
         colHelpDeskTickets = @Service.GetHelpDeskTickets();
     }
 
-    public void OnCommandClicked(CommandClickEventArgs<HelpDeskTickets> args)
+    public async void OnCommandClicked(CommandClickEventArgs<HelpDeskTickets> args)
     {
-        SelectedTicket = args.RowData;
+        SelectedTicket = await @Service.GetHelpDeskTicketAsync(args.RowData.TicketGuid);
         this.EditDialogVisibility = true;
+        StateHasChanged();
     }
 
     public async Task SaveTicket()
