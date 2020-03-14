@@ -1,60 +1,84 @@
 ﻿@page "/administration"
 @using SyncfusionHelpDesk.Data;
+@using System.Collections.ObjectModel
 @inherits OwningComponentBase<SyncfusionHelpDeskService>
 
-    <AuthorizeView Roles="Administrators">
-        <div>
-            <header>
-                <div class="module-title">
-                    <div>HELP DESK TICKET ADMINISTRATION</div>
-                </div>
-            </header>
-            <div id="target" style="height: 500px;">
-                <EjsGrid ID="Grid" @ref="gridObj" DataSource="@colHelpDeskTickets" AllowPaging="true">
-                    <GridEvents CommandClicked="OnCommandClicked" TValue="HelpDeskTickets"></GridEvents>
-                    <GridColumns>
-                        <GridColumn HeaderText="" TextAlign="TextAlign.Left" Width="75">
-                            <GridCommandColumns>
-                                <GridCommandColumn ButtonOption="@(new CommandButtonOptions() { Content = "Edit" })"></GridCommandColumn>
-                            </GridCommandColumns>
-                        </GridColumn>
-                        <GridColumn IsPrimaryKey="true" Field=@nameof(HelpDeskTickets.Id)
-                                    HeaderText="ID #" TextAlign="@TextAlign.Left" Width="50"></GridColumn>
-                        <GridColumn Field=@nameof(HelpDeskTickets.TicketStatus)
-                                    HeaderText="Status" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
-                        <GridColumn Field=@nameof(HelpDeskTickets.TicketDate)
-                                    HeaderText="Date" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
-                        <GridColumn Field=@nameof(HelpDeskTickets.TicketDescription)
-                                    HeaderText="Description" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
-                        <GridColumn Field=@nameof(HelpDeskTickets.TicketRequesterEmail)
-                                    HeaderText="Requester" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
-                    </GridColumns>
-                </EjsGrid>
+<AuthorizeView Roles="Administrators">
+    <div>
+        <header>
+            <div class="module-title">
+                <div>HELP DESK TICKET ADMINISTRATION</div>
             </div>
+        </header>
+        <div id="target" style="height: 500px;">
+            <EjsGrid ID="Grid" @ref="gridObj" DataSource="@colHelpDeskTickets" AllowPaging="true">
+                <GridPageSettings PageSize="5"></GridPageSettings>
+                <GridEvents CommandClicked="OnCommandClicked" TValue="HelpDeskTickets"></GridEvents>
+                <GridColumns>
+                    <GridColumn HeaderText="" TextAlign="TextAlign.Left" Width="75">
+                        <GridCommandColumns>
+                            <GridCommandColumn ButtonOption="@(new CommandButtonOptions() { Content = "Edit" })"></GridCommandColumn>
+                        </GridCommandColumns>
+                    </GridColumn>
+                    <GridColumn IsPrimaryKey="true" Field=@nameof(HelpDeskTickets.Id)
+                                HeaderText="ID #" TextAlign="@TextAlign.Left" Width="50"></GridColumn>
+                    <GridColumn Field=@nameof(HelpDeskTickets.TicketStatus)
+                                HeaderText="Status" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
+                    <GridColumn Field=@nameof(HelpDeskTickets.TicketDate)
+                                HeaderText="Date" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
+                    <GridColumn Field=@nameof(HelpDeskTickets.TicketDescription)
+                                HeaderText="Description" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
+                    <GridColumn Field=@nameof(HelpDeskTickets.TicketRequesterEmail)
+                                HeaderText="Requester" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
+                </GridColumns>
+            </EjsGrid>
         </div>
-        <EjsDialog Target="#target" Width="500px" Height="500px" IsModal="true" ShowCloseIcon="true" @bind-Visible="EditDialogVisibility">
-            <DialogTemplates>
-                <Header> EDIT TICKET </Header>
-                <Content><EditTicket TicketGuid="@SelectedTicketGuid" /></Content>
-            </DialogTemplates>
-        </EjsDialog>
-    </AuthorizeView>
+    </div>
+    <EjsDialog Target="#target" Width="500px" Height="500px" IsModal="true" ShowCloseIcon="true"
+               @bind-Visible="EditDialogVisibility">
+        <DialogTemplates>
+            <Header> EDIT TICKET </Header>
+            <Content><EditTicket SelectedTicket="@SelectedTicket" /></Content>
+            <FooterTemplate>
+                <div class="button-container">
+                    <button type="submit" class="e-btn e-normal e-primary" @onclick="SaveTicket">Save</button>
+                </div>
+            </FooterTemplate>
+        </DialogTemplates>
+    </EjsDialog>
+</AuthorizeView>
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     EjsGrid<HelpDeskTickets> gridObj;
-    List<HelpDeskTickets> colHelpDeskTickets;
-    private string SelectedTicketGuid = "";
+    public List<HelpDeskTickets> colHelpDeskTickets { get; set; }
+    private HelpDeskTickets SelectedTicket = new HelpDeskTickets();
     public bool EditDialogVisibility { get; set; } = false;
 
     protected override void OnInitialized()
     {
-        colHelpDeskTickets = @Service.GetHelpDeskTickets().OrderByDescending(x => x.Id).ToList();
+        LoadTickets();
+    }
+
+    private void LoadTickets()
+    {
+        colHelpDeskTickets = @Service.GetHelpDeskTickets().ToList();
+        if(gridObj != null)
+        {
+            gridObj.DataBind();
+        }
     }
 
     public void OnCommandClicked(CommandClickEventArgs<HelpDeskTickets> args)
     {
-        SelectedTicketGuid = args.RowData.TicketGuid;
+        SelectedTicket = args.RowData;
         this.EditDialogVisibility = true;
+    }
+
+    public async Task SaveTicket()
+    {
+        var result = await @Service.UpdateTicketAsync(SelectedTicket);
+        this.EditDialogVisibility = false;
+        LoadTickets();
     }
 }
