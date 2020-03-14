@@ -32,6 +32,7 @@ CREATE TABLE [dbo].[HelpDeskTickets](
 GO
 ALTER TABLE [dbo].[HelpDeskTicketDetails]  WITH CHECK ADD  CONSTRAINT [FK_HelpDeskTicketDetails_HelpDeskTickets] FOREIGN KEY([HelpDeskTicketId])
 REFERENCES [dbo].[HelpDeskTickets] ([Id])
+ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[HelpDeskTicketDetails] CHECK CONSTRAINT [FK_HelpDeskTicketDetails_HelpDeskTickets]
 GO

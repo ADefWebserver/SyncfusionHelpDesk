@@ -15,10 +15,15 @@
                             TValue="HelpDeskTickets">
                 </GridEvents>
                 <GridColumns>
-                    <GridColumn HeaderText="" TextAlign="TextAlign.Left" Width="75">
+                    <GridColumn HeaderText="" TextAlign="TextAlign.Left" Width="150">
                         <GridCommandColumns>
-                            <GridCommandColumn ButtonOption="@(new CommandButtonOptions() 
+                            <GridCommandColumn Type=CommandButtonType.Edit
+                                               ButtonOption="@(new CommandButtonOptions()
                                                                { Content = "Edit" })">
+                            </GridCommandColumn>
+                            <GridCommandColumn Type=CommandButtonType.Delete
+                                               ButtonOption="@(new CommandButtonOptions()
+                                                               { Content = "Delete" })">
                             </GridCommandColumn>
                         </GridCommandColumns>
                     </GridColumn>
@@ -36,6 +41,26 @@
             </EjsGrid>
         </div>
     </div>
+    <EjsDialog Target="#target" Width="100px" Height="130px" IsModal="true" ShowCloseIcon="false"
+               @bind-Visible="DeleteRecordConfirmVisibility">
+        <DialogTemplates>
+            <Header> DELETE RECORD ? </Header>
+            <Content>
+                <div class="button-container">
+                    <button type="submit"
+                            class="e-btn e-normal e-primary"
+                            @onclick="ConfirmDeleteYes">
+                        Yes
+                    </button>
+                    <button type="submit"
+                            class="e-btn e-normal"
+                            @onclick="ConfirmDeleteNo">
+                        No
+                    </button>
+                </div>
+            </Content>
+        </DialogTemplates>
+    </EjsDialog>
     <EjsDialog Target="#target" Width="500px" Height="500px" IsModal="true" ShowCloseIcon="true"
                @bind-Visible="EditDialogVisibility">
         <DialogTemplates>
@@ -43,9 +68,11 @@
             <Content><EditTicket SelectedTicket="@SelectedTicket" /></Content>
             <FooterTemplate>
                 <div class="button-container">
-                    <button type="submit" 
-                            class="e-btn e-normal e-primary" 
-                            @onclick="SaveTicket">Save</button>
+                    <button type="submit"
+                            class="e-btn e-normal e-primary"
+                            @onclick="SaveTicket">
+                        Save
+                    </button>
                 </div>
             </FooterTemplate>
         </DialogTemplates>
@@ -58,6 +85,7 @@
     public IQueryable<HelpDeskTickets> colHelpDeskTickets { get; set; }
     private HelpDeskTickets SelectedTicket = new HelpDeskTickets();
     public bool EditDialogVisibility { get; set; } = false;
+    public bool DeleteRecordConfirmVisibility { get; set; } = false;
 
     protected override void OnInitialized()
     {
@@ -67,8 +95,19 @@
     public async void OnCommandClicked(CommandClickEventArgs<HelpDeskTickets> args)
     {
         SelectedTicket = await @Service.GetHelpDeskTicketAsync(args.RowData.TicketGuid);
-        this.EditDialogVisibility = true;
-        StateHasChanged();
+
+        if (args.CommandColumn.ButtonOption.Content == "Edit")
+        {
+            this.EditDialogVisibility = true;
+            StateHasChanged();
+        }
+
+        if (args.CommandColumn.ButtonOption.Content == "Delete")
+        {
+            // Open Delete confirmation dialog
+            this.DeleteRecordConfirmVisibility = true;
+            StateHasChanged();
+        }
     }
 
     public async Task SaveTicket()
@@ -76,5 +115,17 @@
         var result = await @Service.UpdateTicketAsync(SelectedTicket);
         this.EditDialogVisibility = false;
         gridObj.Refresh();
+    }
+
+    public async void ConfirmDeleteYes()
+    {
+        var result = await @Service.DeleteHelpDeskTicketsAsync(SelectedTicket);
+        this.DeleteRecordConfirmVisibility = false;
+        gridObj.Refresh();
+    }
+
+    public void ConfirmDeleteNo()
+    {
+        this.DeleteRecordConfirmVisibility = false;
     }
 }

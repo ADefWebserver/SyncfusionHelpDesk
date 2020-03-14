@@ -39,7 +39,6 @@ namespace SyncfusionHelpDesk.Data
                 entity.HasOne(d => d.HelpDeskTicket)
                     .WithMany(p => p.HelpDeskTicketDetails)
                     .HasForeignKey(d => d.HelpDeskTicketId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_HelpDeskTicketDetails_HelpDeskTickets");
             });
 

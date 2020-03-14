@@ -52,26 +52,6 @@ namespace SyncfusionHelpDesk.Data
             }
         }
 
-        public Task<HelpDeskTicketDetails>
-            CreateTicketDetailAsync(
-            HelpDeskTicketDetails newHelpDeskTicketDetails)
-        {
-            try
-            {
-                _context.HelpDeskTicketDetails
-                    .Add(newHelpDeskTicketDetails);
-
-                _context.SaveChanges();
-
-                return Task.FromResult(newHelpDeskTicketDetails);
-            }
-            catch (Exception ex)
-            {
-                DetachAllEntities();
-                throw ex;
-            }
-        }
-
         public Task<bool>
             UpdateTicketAsync(
             HelpDeskTickets UpdatedHelpDeskTickets)
@@ -109,10 +89,14 @@ namespace SyncfusionHelpDesk.Data
                             if(item.Id == 0)
                             {
                                 // Create New HelpDeskTicketDetails record
-                                HelpDeskTicketDetails newHelpDeskTicketDetails = new HelpDeskTicketDetails();
-                                newHelpDeskTicketDetails.HelpDeskTicketId = UpdatedHelpDeskTickets.Id;
-                                newHelpDeskTicketDetails.TicketDetailDate = DateTime.Now;
-                                newHelpDeskTicketDetails.TicketDescription = item.TicketDescription;
+                                HelpDeskTicketDetails newHelpDeskTicketDetails = 
+                                    new HelpDeskTicketDetails();
+                                newHelpDeskTicketDetails.HelpDeskTicketId = 
+                                    UpdatedHelpDeskTickets.Id;
+                                newHelpDeskTicketDetails.TicketDetailDate = 
+                                    DateTime.Now;
+                                newHelpDeskTicketDetails.TicketDescription = 
+                                    item.TicketDescription;
 
                                 _context.HelpDeskTicketDetails
                                     .Add(newHelpDeskTicketDetails);

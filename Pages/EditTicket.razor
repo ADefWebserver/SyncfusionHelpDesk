@@ -4,7 +4,7 @@
 @inherits OwningComponentBase<SyncfusionHelpDeskService>
 
 <div>
-    <EjsDropDownList TItem="HelpDeskStatus"
+    <EjsDropDownList TItem="HelpDeskStatus" Enabled="!isReadOnly"
                      TValue="string" PopupHeight="230px" Index=0
                      Placeholder="Ticket Status"
                      DataSource="@HelpDeskStatus.Statuses"
@@ -15,19 +15,20 @@
     </EjsDropDownList>
 </div>
 <div>
-    <EjsDatePicker ID="TicketDate" Placeholder="Ticket Date"
+    <EjsDatePicker ID="TicketDate" Enabled="!isReadOnly"
+                   Placeholder="Ticket Date"
                    FloatLabelType="@FloatLabelType.Always"
                    @bind-Value="@SelectedTicket.TicketDate"
                    Max="DateTime.Now"
                    ShowClearButton="false"></EjsDatePicker>
 </div>
 <div>
-    <EjsTextBox Placeholder="Ticket Description"
+    <EjsTextBox Enabled="!isReadOnly" Placeholder="Ticket Description"
                 FloatLabelType="@FloatLabelType.Always"
                 @bind-Value="@SelectedTicket.TicketDescription"></EjsTextBox>
 </div>
 <div>
-    <EjsTextBox Placeholder="Requester Email"
+    <EjsTextBox Enabled="!isReadOnly" Placeholder="Requester Email"
                 FloatLabelType="@FloatLabelType.Always"
                 @bind-Value="@SelectedTicket.TicketRequesterEmail"></EjsTextBox>
 </div>
@@ -69,6 +70,7 @@
     [Parameter]
     public HelpDeskTickets SelectedTicket { get; set; }
 
+    public bool isReadOnly = true;
     ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
 
     string NewHelpDeskTicketDetail = "";
@@ -77,18 +79,31 @@
     {
         // Get the current user
         CurrentUser = (await authenticationStateTask).User;
+
+        // If theere is a logged in user
+        // they are an Administrator
+        // Enable editing
+        isReadOnly = !CurrentUser.Identity.IsAuthenticated;
     }
 
     private void AddHelpDeskTicketDetail()
     {
         // Create New HelpDeskTicketDetails record
-        HelpDeskTicketDetails NewHelpDeskTicketDetails = new HelpDeskTicketDetails();
-        NewHelpDeskTicketDetails.HelpDeskTicketId = SelectedTicket.Id;
-        NewHelpDeskTicketDetails.TicketDetailDate = DateTime.Now;
-        NewHelpDeskTicketDetails.TicketDescription = NewHelpDeskTicketDetail;
+        HelpDeskTicketDetails NewHelpDeskTicketDetails = 
+            new HelpDeskTicketDetails();
+
+        NewHelpDeskTicketDetails.HelpDeskTicketId = 
+            SelectedTicket.Id;
+
+        NewHelpDeskTicketDetails.TicketDetailDate = 
+            DateTime.Now;
+
+        NewHelpDeskTicketDetails.TicketDescription = 
+            NewHelpDeskTicketDetail;
 
         // Add to collection
-        SelectedTicket.HelpDeskTicketDetails.Add(NewHelpDeskTicketDetails);
+        SelectedTicket.HelpDeskTicketDetails
+            .Add(NewHelpDeskTicketDetails);
 
         // Clear the Text Box
         NewHelpDeskTicketDetail = "";
