@@ -18,18 +18,19 @@ namespace SyncfusionHelpDesk
             configuration = Configuration;
         }
 
-        public async Task SendEmail()
+        public async Task SendEmail(string EmailAddress, string EmailSubject)
         {
             var apiKey = configuration["SENDGRID_APIKEY"];
+            var senderEmail = configuration["SenderEmail"];
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress("Webmaster@email.com", "Sample Email"),
-                Subject = "Hello World from the SendGrid CSharp SDK!",
+                From = new EmailAddress(senderEmail, senderEmail),
+                Subject = EmailSubject,
                 PlainTextContent = "Hello, Email!",
                 HtmlContent = "<strong>Hello, Email!</strong>"
             };
-            msg.AddTo(new EmailAddress("Webmaster@email.com", "Test User"));
+            msg.AddTo(new EmailAddress(EmailAddress, EmailSubject));
             var response = await client.SendEmailAsync(msg);
         }
     }
