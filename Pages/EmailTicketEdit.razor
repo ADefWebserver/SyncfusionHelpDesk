@@ -11,7 +11,7 @@
 <EjsDialog Target="#target" Width="500px" Height="500px" IsModal="true" ShowCloseIcon="true"
            Visible="EditDialogVisibility">
     <DialogTemplates>
-        <Header> EDIT TICKET </Header>
+        <Header> EDIT TICKET # @SelectedTicket.Id</Header>
         <Content><EditTicket SelectedTicket="@SelectedTicket" /></Content>
         <FooterTemplate>
             <div class="button-container">

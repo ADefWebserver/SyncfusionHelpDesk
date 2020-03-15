@@ -75,7 +75,7 @@
             await _RoleManager.CreateAsync(new IdentityRole(ADMINISTRATION_ROLE));
         }
 
-        var user = await _UserManager.FindByNameAsync("Admin@BlazorHelpWebsite.com");
+        var user = await _UserManager.FindByNameAsync("Administrator@Email");
 
         if (user != null)
         {
@@ -111,7 +111,11 @@
             await Task.Delay(100);
             await this.ToastObj.Show();
 
-            //await _EmailSender.SendEmail();
+            await _EmailSender.SendEmail(
+                "Help Desk Ticket Created",
+                "",
+                NewHelpDeskTickets.TicketGuid
+                );
         }
         catch (Exception ex)
         {
