@@ -1,5 +1,9 @@
 ﻿@page "/emailticketedit/{TicketGuid}"
+@using Microsoft.Extensions.Configuration
+@using System.Security.Claims;
 @using SyncfusionHelpDesk.Data;
+@inject EmailSender _EmailSender
+@inject IConfiguration _configuration
 @inherits OwningComponentBase<SyncfusionHelpDeskService>
 <div id="target" style="height: 500px;">
     @if (!EditDialogVisibility)
@@ -25,9 +29,20 @@
     </DialogTemplates>
 </EjsDialog>
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
     [Parameter] public string TicketGuid { get; set; }
+
+    ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
     private HelpDeskTickets SelectedTicket = new HelpDeskTickets();
     private bool EditDialogVisibility = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get current user
+        CurrentUser = (await authenticationStateTask).User;
+    }
 
     protected override async Task
         OnAfterRenderAsync(bool firstRender)
@@ -45,5 +60,33 @@
     {
         var result = await @Service.UpdateTicketAsync(SelectedTicket);
         EditDialogVisibility = false;
+
+        // Send Emails
+
+        if (CurrentUser.Identity.IsAuthenticated)
+        {
+            if (CurrentUser.IsInRole("Administrators"))
+            {
+                // User an Administrator
+                // Send email to Requester
+                await _EmailSender.SendEmail(
+                "Help Desk Ticket Updated",
+                SelectedTicket.TicketRequesterEmail,
+                SelectedTicket.TicketGuid
+                );
+
+                return;
+            }
+        }
+
+        // User is not an Administrator
+        // Send email to Administrator
+        string AdministratorEmail = _configuration["SenderEmail"];
+
+        await _EmailSender.SendEmail(
+        "Help Desk Ticket Updated",
+        AdministratorEmail,
+        SelectedTicket.TicketGuid
+        );
     }
 }
