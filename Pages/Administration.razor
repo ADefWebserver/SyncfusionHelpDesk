@@ -31,20 +31,29 @@
                         </GridCommandColumns>
                     </GridColumn>
                     <GridColumn IsPrimaryKey="true" Field=@nameof(HelpDeskTickets.Id)
-                                HeaderText="ID #" TextAlign="@TextAlign.Left" Width="70"></GridColumn>
+                                HeaderText="ID #" TextAlign="@TextAlign.Left" Width="70">
+                    </GridColumn>
                     <GridColumn Field=@nameof(HelpDeskTickets.TicketStatus)
-                                HeaderText="Status" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
+                                HeaderText="Status" TextAlign="@TextAlign.Left" Width="80">
+                    </GridColumn>
                     <GridColumn Field=@nameof(HelpDeskTickets.TicketDate)
-                                HeaderText="Date" TextAlign="@TextAlign.Left" Width="80"></GridColumn>
+                                HeaderText="Date" TextAlign="@TextAlign.Left" Width="80">
+                    </GridColumn>
                     <GridColumn Field=@nameof(HelpDeskTickets.TicketDescription)
-                                HeaderText="Description" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
+                                HeaderText="Description" TextAlign="@TextAlign.Left" Width="150">
+                    </GridColumn>
                     <GridColumn Field=@nameof(HelpDeskTickets.TicketRequesterEmail)
-                                HeaderText="Requester" TextAlign="@TextAlign.Left" Width="150"></GridColumn>
+                                HeaderText="Requester" TextAlign="@TextAlign.Left" Width="150">
+                    </GridColumn>
                 </GridColumns>
             </EjsGrid>
         </div>
     </div>
-    <EjsDialog Target="#target" Width="100px" Height="130px" IsModal="true" ShowCloseIcon="false"
+    <EjsDialog Target="#target"
+               Width="100px"
+               Height="130px"
+               IsModal="true"
+               ShowCloseIcon="false"
                @bind-Visible="DeleteRecordConfirmVisibility">
         <DialogTemplates>
             <Header> DELETE RECORD ? </Header>
@@ -64,11 +73,17 @@
             </Content>
         </DialogTemplates>
     </EjsDialog>
-    <EjsDialog Target="#target" Width="500px" Height="500px" IsModal="true" ShowCloseIcon="true"
+    <EjsDialog Target="#target"
+               Width="500px"
+               Height="500px"
+               IsModal="true"
+               ShowCloseIcon="true"
                @bind-Visible="EditDialogVisibility">
         <DialogTemplates>
             <Header> EDIT TICKET # @SelectedTicket.Id</Header>
-            <Content><EditTicket SelectedTicket="@SelectedTicket" /></Content>
+            <Content>
+                <EditTicket SelectedTicket="@SelectedTicket" />
+            </Content>
             <FooterTemplate>
                 <div class="button-container">
                     <button type="submit"
@@ -84,6 +99,7 @@
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
+
     EjsGrid<HelpDeskTickets> gridObj;
     public IQueryable<HelpDeskTickets> colHelpDeskTickets { get; set; }
     private HelpDeskTickets SelectedTicket = new HelpDeskTickets();
@@ -92,15 +108,22 @@
 
     protected override void OnInitialized()
     {
+        // GetHelpDeskTickets returns IQueryable that the
+        // EjsGrid will use to only pull records for the
+        // page that is currently selected
         colHelpDeskTickets = @Service.GetHelpDeskTickets();
     }
 
-    public async void OnCommandClicked(CommandClickEventArgs<HelpDeskTickets> args)
+    public async void OnCommandClicked(
+        CommandClickEventArgs<HelpDeskTickets> args)
     {
-        SelectedTicket = await @Service.GetHelpDeskTicketAsync(args.RowData.TicketGuid);
+        // Get the selected Help Desk Ticket
+        SelectedTicket =
+            await @Service.GetHelpDeskTicketAsync(args.RowData.TicketGuid);
 
         if (args.CommandColumn.ButtonOption.Content == "Edit")
         {
+            // Open teh Edit dialog
             this.EditDialogVisibility = true;
             StateHasChanged();
         }
@@ -115,8 +138,16 @@
 
     public async Task SaveTicket()
     {
-        var result = await @Service.UpdateTicketAsync(SelectedTicket);
+        // Update the selected Help Desk Ticket
+        var result =
+            await @Service.UpdateTicketAsync(SelectedTicket);
+
+        // Close the Edit dialog
         this.EditDialogVisibility = false;
+
+        // Refresh the EjsGrid
+        // so the changes to the selected
+        // Help Desk Ticket are reflected
         gridObj.Refresh();
 
         // Send email to Requester
@@ -129,13 +160,26 @@
 
     public async void ConfirmDeleteYes()
     {
-        var result = await @Service.DeleteHelpDeskTicketsAsync(SelectedTicket);
+        // The user selected Yes to delete the
+        // seleted Help Desk Ticket
+        // Delete the record
+        var result =
+            await @Service.DeleteHelpDeskTicketsAsync(
+                SelectedTicket);
+
+        // Close the dialog
         this.DeleteRecordConfirmVisibility = false;
+
+        // Refresh the EjsGrid
+        // so the deleted record will not show
         gridObj.Refresh();
     }
 
     public void ConfirmDeleteNo()
     {
+        // Open the dialog
+        // to give the user a chance
+        // to confim they want to delete the record
         this.DeleteRecordConfirmVisibility = false;
     }
 }

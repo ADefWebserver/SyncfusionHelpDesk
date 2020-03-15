@@ -2,7 +2,6 @@
 @using SyncfusionHelpDesk.Data;
 @using Syncfusion.EJ2.Blazor.DropDowns
 @inherits OwningComponentBase<SyncfusionHelpDeskService>
-
 <div>
     <EjsDropDownList TItem="HelpDeskStatus" Enabled="!isReadOnly"
                      TValue="string" PopupHeight="230px" Index=0
@@ -11,7 +10,8 @@
                      FloatLabelType="@FloatLabelType.Always"
                      @bind-Value="@SelectedTicket.TicketStatus">
         <DropDownListFieldSettings Text="Text"
-                                   Value="ID"></DropDownListFieldSettings>
+                                   Value="ID">
+        </DropDownListFieldSettings>
     </EjsDropDownList>
 </div>
 <div>
@@ -20,17 +20,20 @@
                    FloatLabelType="@FloatLabelType.Always"
                    @bind-Value="@SelectedTicket.TicketDate"
                    Max="DateTime.Now"
-                   ShowClearButton="false"></EjsDatePicker>
+                   ShowClearButton="false">
+    </EjsDatePicker>
 </div>
 <div>
     <EjsTextBox Enabled="!isReadOnly" Placeholder="Ticket Description"
                 FloatLabelType="@FloatLabelType.Always"
-                @bind-Value="@SelectedTicket.TicketDescription"></EjsTextBox>
+                @bind-Value="@SelectedTicket.TicketDescription">
+    </EjsTextBox>
 </div>
 <div>
     <EjsTextBox Enabled="!isReadOnly" Placeholder="Requester Email"
                 FloatLabelType="@FloatLabelType.Always"
-                @bind-Value="@SelectedTicket.TicketRequesterEmail"></EjsTextBox>
+                @bind-Value="@SelectedTicket.TicketRequesterEmail">
+    </EjsTextBox>
 </div>
 @if (SelectedTicket.HelpDeskTicketDetails != null)
 {
@@ -44,11 +47,19 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var TicketDetail in SelectedTicket.HelpDeskTicketDetails)
+                @foreach (var TicketDetail in
+                SelectedTicket.HelpDeskTicketDetails)
                 {
                     <tr>
-                        <td>@TicketDetail.TicketDetailDate.ToShortDateString()</td>
-                        <td>@TicketDetail.TicketDescription</td>
+                        <td>
+                            @TicketDetail.
+                            TicketDetailDate.
+                            ToShortDateString()
+                        </td>
+                        <td>
+                            @TicketDetail.
+                            TicketDescription
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -80,7 +91,7 @@
         // Get the current user
         CurrentUser = (await authenticationStateTask).User;
 
-        // If theere is a logged in user
+        // If there is a logged in user
         // they are an Administrator
         // Enable editing
         isReadOnly = !CurrentUser.Identity.IsAuthenticated;
@@ -89,16 +100,16 @@
     private void AddHelpDeskTicketDetail()
     {
         // Create New HelpDeskTicketDetails record
-        HelpDeskTicketDetails NewHelpDeskTicketDetails = 
+        HelpDeskTicketDetails NewHelpDeskTicketDetails =
             new HelpDeskTicketDetails();
 
-        NewHelpDeskTicketDetails.HelpDeskTicketId = 
+        NewHelpDeskTicketDetails.HelpDeskTicketId =
             SelectedTicket.Id;
 
-        NewHelpDeskTicketDetails.TicketDetailDate = 
+        NewHelpDeskTicketDetails.TicketDetailDate =
             DateTime.Now;
 
-        NewHelpDeskTicketDetails.TicketDescription = 
+        NewHelpDeskTicketDetails.TicketDescription =
             NewHelpDeskTicketDetail;
 
         // Add to collection

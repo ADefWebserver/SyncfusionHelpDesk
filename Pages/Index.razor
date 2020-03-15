@@ -20,29 +20,37 @@
 </EjsToast>
 <h3>New Help Desk Ticket</h3>
 <br />
-<EditForm ID="new-doctor-form" Model="@objHelpDeskTicket" OnValidSubmit="@HandleValidSubmit">
+<EditForm ID="new-doctor-form" Model="@objHelpDeskTicket" 
+          OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div>
-        <EjsDropDownList TItem="HelpDeskStatus" TValue="string" PopupHeight="230px" Index=0
-                         Placeholder="Ticket Status" DataSource="@HelpDeskStatus.Statuses"
+        <EjsDropDownList TItem="HelpDeskStatus" TValue="string" 
+                         PopupHeight="230px" Index=0
+                         Placeholder="Ticket Status" 
+                         DataSource="@HelpDeskStatus.Statuses"
                          FloatLabelType="@FloatLabelType.Always"
                          @bind-Value="@objHelpDeskTicket.TicketStatus">
-            <DropDownListFieldSettings Text="Text" Value="ID"></DropDownListFieldSettings>
+            <DropDownListFieldSettings Text="Text" 
+                                       Value="ID"></DropDownListFieldSettings>
         </EjsDropDownList>
     </div>
     <div>
-        <EjsDatePicker ID="TicketDate" Placeholder="Ticket Date" FloatLabelType="@FloatLabelType.Always"
+        <EjsDatePicker ID="TicketDate" Placeholder="Ticket Date" 
+                       FloatLabelType="@FloatLabelType.Always"
                        @bind-Value="@objHelpDeskTicket.TicketDate"
-                       Max="DateTime.Now" ShowClearButton="false"></EjsDatePicker>
+                       Max="DateTime.Now" 
+                       ShowClearButton="false"></EjsDatePicker>
         <ValidationMessage For="@(() => objHelpDeskTicket.TicketDate)" />
     </div>
     <div>
-        <EjsTextBox Placeholder="Ticket Description" FloatLabelType="@FloatLabelType.Always"
+        <EjsTextBox Placeholder="Ticket Description" 
+                    FloatLabelType="@FloatLabelType.Always"
                     @bind-Value="@objHelpDeskTicket.TicketDescription"></EjsTextBox>
         <ValidationMessage For="@(() => objHelpDeskTicket.TicketDescription)" />
     </div>
     <div>
-        <EjsTextBox Placeholder="Requester Email" FloatLabelType="@FloatLabelType.Always"
+        <EjsTextBox Placeholder="Requester Email" 
+                    FloatLabelType="@FloatLabelType.Always"
                     @bind-Value="@objHelpDeskTicket.TicketRequesterEmail"></EjsTextBox>
         <ValidationMessage For="@(() => objHelpDeskTicket.TicketRequesterEmail)" />
     </div>
@@ -63,11 +71,12 @@
     EjsToast ToastObj;
     private string ToastContent { get; set; }  = "";
 
-    HelpDeskTicket objHelpDeskTicket = new HelpDeskTicket() { TicketDate = DateTime.Now };
+    HelpDeskTicket objHelpDeskTicket = 
+        new HelpDeskTicket() { TicketDate = DateTime.Now };
 
     protected override async Task OnInitializedAsync()
     {
-        // ensure there is a ADMINISTRATION_ROLE
+        // Ensure there is a ADMINISTRATION_ROLE
         var RoleResult = await _RoleManager.FindByNameAsync(ADMINISTRATION_ROLE);
         if (RoleResult == null)
         {
@@ -75,12 +84,16 @@
             await _RoleManager.CreateAsync(new IdentityRole(ADMINISTRATION_ROLE));
         }
 
+        // Try to get the Administrator account
         var user = await _UserManager.FindByNameAsync("Administrator@Email");
 
+        // Administrator may not be created yet
         if (user != null)
         {
-            // Is user in administrator role?
-            var UserResult = await _UserManager.IsInRoleAsync(user, ADMINISTRATION_ROLE);
+            // Is Administrator account in the Administrator role?
+            var UserResult = 
+                await _UserManager.IsInRoleAsync(user, ADMINISTRATION_ROLE);
+
             if (!UserResult)
             {
                 // Put admin in Administrator role
@@ -88,6 +101,8 @@
             }
         }
 
+        // Get the current user
+        // Note: User may not be logged in
         CurrentUser = (await authenticationStateTask).User;
     }
 
@@ -95,18 +110,32 @@
     {
         try
         {
-            HelpDeskTickets NewHelpDeskTickets = new HelpDeskTickets();
-            NewHelpDeskTickets.TicketDate = objHelpDeskTicket.TicketDate;
-            NewHelpDeskTickets.TicketDescription = objHelpDeskTicket.TicketDescription;
-            NewHelpDeskTickets.TicketRequesterEmail = objHelpDeskTicket.TicketRequesterEmail;
-            NewHelpDeskTickets.TicketStatus = objHelpDeskTicket.TicketStatus;
-            NewHelpDeskTickets.TicketGuid = System.Guid.NewGuid().ToString();
+            // Create a HelpDeskTickets
+            HelpDeskTickets NewHelpDeskTickets = 
+                new HelpDeskTickets();
 
-            var result = @Service.CreateTicketAsync(NewHelpDeskTickets);
+            // Set the values to the values entered 
+            // in the form
+            NewHelpDeskTickets.TicketDate = 
+                objHelpDeskTicket.TicketDate;
+            NewHelpDeskTickets.TicketDescription = 
+                objHelpDeskTicket.TicketDescription;
+            NewHelpDeskTickets.TicketRequesterEmail = 
+                objHelpDeskTicket.TicketRequesterEmail;
+            NewHelpDeskTickets.TicketStatus = 
+                objHelpDeskTicket.TicketStatus;
+            // Create a new GUID for this Help Desk Ticket
+            NewHelpDeskTickets.TicketGuid = 
+                System.Guid.NewGuid().ToString();
 
-            // Clear Form
+            // Save the new Help Desk Ticket
+            var result = 
+                @Service.CreateTicketAsync(NewHelpDeskTickets);
+
+            // Clear the form
             objHelpDeskTicket = new HelpDeskTicket();
 
+            // Show the Toast
             ToastContent = "Saved!";
             await Task.Delay(100);
             await this.ToastObj.Show();

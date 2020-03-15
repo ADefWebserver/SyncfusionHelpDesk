@@ -12,11 +12,14 @@
         <h4>Thank You!</h4>
     }
 </div>
-<EjsDialog Target="#target" Width="500px" Height="500px" IsModal="true" ShowCloseIcon="true"
+<EjsDialog Target="#target" Width="500px" Height="500px"
+           IsModal="true" ShowCloseIcon="true"
            Visible="EditDialogVisibility">
     <DialogTemplates>
         <Header> EDIT TICKET # @SelectedTicket.Id</Header>
-        <Content><EditTicket SelectedTicket="@SelectedTicket" /></Content>
+        <Content>
+            <EditTicket SelectedTicket="@SelectedTicket" />
+        </Content>
         <FooterTemplate>
             <div class="button-container">
                 <button type="submit"
@@ -49,6 +52,8 @@
     {
         if (firstRender)
         {
+            // Get the Help Desk Ticket associated with
+            // the GUID that was passed to the control
             SelectedTicket =
                 await @Service.GetHelpDeskTicketAsync(TicketGuid);
 
@@ -58,11 +63,13 @@
 
     public async Task SaveTicket()
     {
+        // Save the Help Desk Ticket
         var result = await @Service.UpdateTicketAsync(SelectedTicket);
+
+        // Close the Dialog
         EditDialogVisibility = false;
 
         // Send Emails
-
         if (CurrentUser.Identity.IsAuthenticated)
         {
             if (CurrentUser.IsInRole("Administrators"))

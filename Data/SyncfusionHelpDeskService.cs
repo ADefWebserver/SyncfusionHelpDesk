@@ -19,13 +19,19 @@ namespace SyncfusionHelpDesk.Data
         public IQueryable<HelpDeskTickets>
             GetHelpDeskTickets()
         {
-            return _context.HelpDeskTickets
-                .AsNoTracking();
+            // Return all HelpDesk Tickets as IQueryable
+            // EjsGrid will use this to only pull records 
+            // for the page that it is currently displaying
+            // Note: AsNoTracking() is used because it is 
+            // quicker to execute and we do not need
+            // Entity Framework change tracking at this point
+            return _context.HelpDeskTickets.AsNoTracking();
         }
 
         public async Task<HelpDeskTickets>
             GetHelpDeskTicketAsync(string HelpDeskTicketGuid)
         {
+            // Get the existing record
             var ExistingTicket = await _context.HelpDeskTickets
                 .Include(x => x.HelpDeskTicketDetails)
                 .Where(x => x.TicketGuid == HelpDeskTicketGuid)
@@ -58,6 +64,7 @@ namespace SyncfusionHelpDesk.Data
         {
             try
             {
+                // Get the existing record
                 var ExistingTicket =
                     _context.HelpDeskTickets
                     .Where(x => x.Id == UpdatedHelpDeskTickets.Id)
@@ -124,6 +131,7 @@ namespace SyncfusionHelpDesk.Data
             DeleteHelpDeskTicketsAsync(
             HelpDeskTickets DeleteHelpDeskTickets)
         {
+            // Get the existing record
             var ExistingTicket =
                 _context.HelpDeskTickets
                 .Include(x => x.HelpDeskTicketDetails)
