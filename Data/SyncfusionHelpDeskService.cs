@@ -46,6 +46,7 @@ namespace SyncfusionHelpDesk.Data
         {
             try
             {
+                // Add a new Help Desk Ticket
                 _context.HelpDeskTickets.Add(newHelpDeskTickets);
                 _context.SaveChanges();
 
@@ -140,6 +141,7 @@ namespace SyncfusionHelpDesk.Data
 
             if (ExistingTicket != null)
             {
+                // Delete the Help Desk Ticket
                 _context.HelpDeskTickets.Remove(ExistingTicket);
                 _context.SaveChanges();
             }

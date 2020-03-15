@@ -27,6 +27,7 @@ namespace SyncfusionHelpDesk
         {
             try
             {
+                // Email settings
                 SendGridMessage msg = new SendGridMessage();
                 var apiKey = configuration["SENDGRID_APIKEY"];
                 var senderEmail = configuration["SenderEmail"];
