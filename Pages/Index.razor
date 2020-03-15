@@ -111,9 +111,10 @@
             await Task.Delay(100);
             await this.ToastObj.Show();
 
+            // Send Email
             await _EmailSender.SendEmail(
                 "Help Desk Ticket Created",
-                "",
+                "", // No need to pass an email because it goes to Administrator
                 NewHelpDeskTickets.TicketGuid
                 );
         }

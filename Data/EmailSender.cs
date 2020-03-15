@@ -20,7 +20,10 @@ namespace SyncfusionHelpDesk
             httpContextAccessor = HttpContextAccessor;
         }
 
-        public async Task SendEmail(string EmailType, string EmailAddress, string TicketGuid)
+        public async Task SendEmail(
+            string EmailType,
+            string EmailAddress,
+            string TicketGuid)
         {
             try
             {
@@ -28,13 +31,20 @@ namespace SyncfusionHelpDesk
                 var apiKey = configuration["SENDGRID_APIKEY"];
                 var senderEmail = configuration["SenderEmail"];
                 var client = new SendGridClient(apiKey);
-                var FromEmail = new EmailAddress(senderEmail, senderEmail);
+                var FromEmail = new EmailAddress(
+                    senderEmail,
+                    senderEmail
+                    );
 
                 // Format Email contents
-                string strPlainTextContent = $"{EmailType}: {GetHelpDeskTicketUrl(TicketGuid)}";
-                string strHtmlContent = $"<b>{EmailType}:</b> ";
-                strHtmlContent = strHtmlContent + $"<a href='{ GetHelpDeskTicketUrl(TicketGuid) }'>";
-                strHtmlContent = strHtmlContent + $"{GetHelpDeskTicketUrl(TicketGuid)}</a>";
+                string strPlainTextContent =
+                    $"{EmailType}: {GetHelpDeskTicketUrl(TicketGuid)}";
+                string strHtmlContent =
+                    $"<b>{EmailType}:</b> ";
+                strHtmlContent = strHtmlContent +
+                    $"<a href='{ GetHelpDeskTicketUrl(TicketGuid) }'>";
+                strHtmlContent = strHtmlContent +
+                    $"{GetHelpDeskTicketUrl(TicketGuid)}</a>";
 
                 if (EmailType == "Help Desk Ticket Created")
                 {

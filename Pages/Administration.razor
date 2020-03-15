@@ -1,5 +1,6 @@
 ﻿@page "/administration"
 @using SyncfusionHelpDesk.Data;
+@inject EmailSender _EmailSender
 @inherits OwningComponentBase<SyncfusionHelpDeskService>
 
 <AuthorizeView Roles="Administrators">
@@ -66,7 +67,7 @@
     <EjsDialog Target="#target" Width="500px" Height="500px" IsModal="true" ShowCloseIcon="true"
                @bind-Visible="EditDialogVisibility">
         <DialogTemplates>
-            <Header> EDIT TICKET </Header>
+            <Header> EDIT TICKET # @SelectedTicket.Id</Header>
             <Content><EditTicket SelectedTicket="@SelectedTicket" /></Content>
             <FooterTemplate>
                 <div class="button-container">
@@ -117,6 +118,13 @@
         var result = await @Service.UpdateTicketAsync(SelectedTicket);
         this.EditDialogVisibility = false;
         gridObj.Refresh();
+
+        // Send email to Requester
+        await _EmailSender.SendEmail(
+        "Help Desk Ticket Updated",
+        SelectedTicket.TicketRequesterEmail,
+        SelectedTicket.TicketGuid
+        );
     }
 
     public async void ConfirmDeleteYes()
