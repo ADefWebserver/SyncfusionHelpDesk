@@ -24,12 +24,12 @@ namespace SyncfusionHelpDesk
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress("Webmaster@adefwebserver.com", "Sample Email"),
+                From = new EmailAddress("Webmaster@email.com", "Sample Email"),
                 Subject = "Hello World from the SendGrid CSharp SDK!",
                 PlainTextContent = "Hello, Email!",
                 HtmlContent = "<strong>Hello, Email!</strong>"
             };
-            msg.AddTo(new EmailAddress("Webmaster@adefwebserver.com", "Test User"));
+            msg.AddTo(new EmailAddress("Webmaster@email.com", "Test User"));
             var response = await client.SendEmailAsync(msg);
         }
     }
