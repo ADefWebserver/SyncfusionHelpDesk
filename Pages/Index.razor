@@ -5,6 +5,7 @@
 @using SyncfusionHelpDesk.Data;
 @inject UserManager<IdentityUser> _UserManager
 @inject RoleManager<IdentityRole> _RoleManager
+@inject EmailSender _EmailSender
 @inherits OwningComponentBase<SyncfusionHelpDeskService>
 
 @if (CurrentUser.IsInRole(ADMINISTRATION_ROLE))
@@ -109,6 +110,8 @@
             ToastContent = "Saved!";
             await Task.Delay(100);
             await this.ToastObj.Show();
+
+            _EmailSender.SendEmail();
         }
         catch (Exception ex)
         {

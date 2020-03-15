@@ -56,6 +56,7 @@ namespace SyncfusionHelpDesk
                 Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<SyncfusionHelpDeskService>();
+            services.AddScoped<EmailSender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
