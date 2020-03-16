@@ -1,5 +1,4 @@
 # SyncfusionHelpDesk
-Sample Code for the Syncfusion Help Desk application featured in the Blazor Succinctly Book
 
 ![Screenshot](SyncfusionHelpDesk.png)
 
