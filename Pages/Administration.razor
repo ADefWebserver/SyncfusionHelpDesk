@@ -6,7 +6,7 @@
 <AuthorizeView Roles="Administrators">
     <div>
         <div id="target" style="height: 500px;">
-            <EjsGrid ID="Grid"
+            <SfGrid ID="Grid"
                      @ref="gridObj"
                      DataSource="@colHelpDeskTickets"
                      AllowPaging="true"
@@ -46,10 +46,10 @@
                                 HeaderText="Requester" TextAlign="@TextAlign.Left" Width="150">
                     </GridColumn>
                 </GridColumns>
-            </EjsGrid>
+            </SfGrid>
         </div>
     </div>
-    <EjsDialog Target="#target"
+    <SfDialog Target="#target"
                Width="100px"
                Height="130px"
                IsModal="true"
@@ -72,8 +72,8 @@
                 </div>
             </Content>
         </DialogTemplates>
-    </EjsDialog>
-    <EjsDialog Target="#target"
+    </SfDialog>
+    <SfDialog Target="#target"
                Width="500px"
                Height="500px"
                IsModal="true"
@@ -94,13 +94,13 @@
                 </div>
             </FooterTemplate>
         </DialogTemplates>
-    </EjsDialog>
+    </SfDialog>
 </AuthorizeView>
 @code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
-    EjsGrid<HelpDeskTickets> gridObj;
+    SfGrid<HelpDeskTickets> gridObj;
     public IQueryable<HelpDeskTickets> colHelpDeskTickets { get; set; }
     private HelpDeskTickets SelectedTicket = new HelpDeskTickets();
     public bool EditDialogVisibility { get; set; } = false;
@@ -109,7 +109,7 @@
     protected override void OnInitialized()
     {
         // GetHelpDeskTickets returns IQueryable that the
-        // EjsGrid will use to only pull records for the
+        // SfGrid will use to only pull records for the
         // page that is currently selected
         colHelpDeskTickets = @Service.GetHelpDeskTickets();
     }
@@ -145,7 +145,7 @@
         // Close the Edit dialog
         this.EditDialogVisibility = false;
 
-        // Refresh the EjsGrid
+        // Refresh the SfGrid
         // so the changes to the selected
         // Help Desk Ticket are reflected
         gridObj.Refresh();
@@ -170,7 +170,7 @@
         // Close the dialog
         this.DeleteRecordConfirmVisibility = false;
 
-        // Refresh the EjsGrid
+        // Refresh the SfGrid
         // so the deleted record will not show
         gridObj.Refresh();
     }

@@ -20,7 +20,7 @@ namespace SyncfusionHelpDesk.Data
             GetHelpDeskTickets()
         {
             // Return all HelpDesk Tickets as IQueryable
-            // EjsGrid will use this to only pull records 
+            // SfGrid will use this to only pull records 
             // for the page that it is currently displaying
             // Note: AsNoTracking() is used because it is 
             // quicker to execute and we do not need

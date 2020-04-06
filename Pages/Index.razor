@@ -12,19 +12,19 @@
 {
     <p>You are an Administrator named: <b>@CurrentUser.Identity.Name</b></p>
 }
-<EjsToast ID="toast_default"
+<SfToast ID="toast_default"
           @ref="ToastObj"
           Title="Help Desk Ticket"
           Content="@ToastContent" TimeOut="5000">
     <ToastPosition X="Right"></ToastPosition>
-</EjsToast>
+</SfToast>
 <h3>New Help Desk Ticket</h3>
 <br />
 <EditForm ID="new-doctor-form" Model="@objHelpDeskTicket" 
           OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div>
-        <EjsDropDownList TItem="HelpDeskStatus" TValue="string" 
+        <SfDropDownList TItem="HelpDeskStatus" TValue="string" 
                          PopupHeight="230px" Index=0
                          Placeholder="Ticket Status" 
                          DataSource="@HelpDeskStatus.Statuses"
@@ -32,26 +32,26 @@
                          @bind-Value="@objHelpDeskTicket.TicketStatus">
             <DropDownListFieldSettings Text="Text" 
                                        Value="ID"></DropDownListFieldSettings>
-        </EjsDropDownList>
+        </SfDropDownList>
     </div>
     <div>
-        <EjsDatePicker ID="TicketDate" Placeholder="Ticket Date" 
+        <SfDatePicker ID="TicketDate" Placeholder="Ticket Date" 
                        FloatLabelType="@FloatLabelType.Always"
                        @bind-Value="@objHelpDeskTicket.TicketDate"
                        Max="DateTime.Now" 
-                       ShowClearButton="false"></EjsDatePicker>
+                       ShowClearButton="false"></SfDatePicker>
         <ValidationMessage For="@(() => objHelpDeskTicket.TicketDate)" />
     </div>
     <div>
-        <EjsTextBox Placeholder="Ticket Description" 
+        <SfTextBox Placeholder="Ticket Description" 
                     FloatLabelType="@FloatLabelType.Always"
-                    @bind-Value="@objHelpDeskTicket.TicketDescription"></EjsTextBox>
+                    @bind-Value="@objHelpDeskTicket.TicketDescription"></SfTextBox>
         <ValidationMessage For="@(() => objHelpDeskTicket.TicketDescription)" />
     </div>
     <div>
-        <EjsTextBox Placeholder="Requester Email" 
+        <SfTextBox Placeholder="Requester Email" 
                     FloatLabelType="@FloatLabelType.Always"
-                    @bind-Value="@objHelpDeskTicket.TicketRequesterEmail"></EjsTextBox>
+                    @bind-Value="@objHelpDeskTicket.TicketRequesterEmail"></SfTextBox>
         <ValidationMessage For="@(() => objHelpDeskTicket.TicketRequesterEmail)" />
     </div>
     <br /><br />
@@ -68,7 +68,7 @@
     ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
     string ADMINISTRATION_ROLE = "Administrators";
 
-    EjsToast ToastObj;
+    SfToast ToastObj;
     private string ToastContent { get; set; }  = "";
 
     HelpDeskTicket objHelpDeskTicket = 

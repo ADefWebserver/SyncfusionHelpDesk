@@ -1,9 +1,9 @@
 ﻿@using System.Security.Claims;
 @using SyncfusionHelpDesk.Data;
-@using Syncfusion.EJ2.Blazor.DropDowns
+@using Syncfusion.Blazor.DropDowns
 @inherits OwningComponentBase<SyncfusionHelpDeskService>
 <div>
-    <EjsDropDownList TItem="HelpDeskStatus" Enabled="!isReadOnly"
+    <SfDropDownList TItem="HelpDeskStatus" Enabled="!isReadOnly"
                      TValue="string" PopupHeight="230px" Index=0
                      Placeholder="Ticket Status"
                      DataSource="@HelpDeskStatus.Statuses"
@@ -12,28 +12,28 @@
         <DropDownListFieldSettings Text="Text"
                                    Value="ID">
         </DropDownListFieldSettings>
-    </EjsDropDownList>
+    </SfDropDownList>
 </div>
 <div>
-    <EjsDatePicker ID="TicketDate" Enabled="!isReadOnly"
+    <SfDatePicker ID="TicketDate" Enabled="!isReadOnly"
                    Placeholder="Ticket Date"
                    FloatLabelType="@FloatLabelType.Always"
                    @bind-Value="@SelectedTicket.TicketDate"
                    Max="DateTime.Now"
                    ShowClearButton="false">
-    </EjsDatePicker>
+    </SfDatePicker>
 </div>
 <div>
-    <EjsTextBox Enabled="!isReadOnly" Placeholder="Ticket Description"
+    <SfTextBox Enabled="!isReadOnly" Placeholder="Ticket Description"
                 FloatLabelType="@FloatLabelType.Always"
                 @bind-Value="@SelectedTicket.TicketDescription">
-    </EjsTextBox>
+    </SfTextBox>
 </div>
 <div>
-    <EjsTextBox Enabled="!isReadOnly" Placeholder="Requester Email"
+    <SfTextBox Enabled="!isReadOnly" Placeholder="Requester Email"
                 FloatLabelType="@FloatLabelType.Always"
                 @bind-Value="@SelectedTicket.TicketRequesterEmail">
-    </EjsTextBox>
+    </SfTextBox>
 </div>
 @if (SelectedTicket.HelpDeskTicketDetails != null)
 {
@@ -62,13 +62,13 @@
             </tbody>
         </table>
     }
-    <EjsTextBox Placeholder="NewHelp Desk Ticket Detail"
+    <SfTextBox Placeholder="NewHelp Desk Ticket Detail"
                 @bind-Value="@NewHelpDeskTicketDetail">
-    </EjsTextBox>
-    <EjsButton CssClass="e-small e-success"
+    </SfTextBox>
+    <SfButton CssClass="e-small e-success"
                @onclick="AddHelpDeskTicketDetail">
         Add
-    </EjsButton>
+    </SfButton>
 }
 <br />
 @code {
