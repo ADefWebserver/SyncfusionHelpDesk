@@ -17,7 +17,7 @@ using SyncfusionHelpDesk.Areas.Identity;
 using SyncfusionHelpDesk.Data;
 
 // Syncfusion Support
-using Syncfusion.EJ2.Blazor;
+using Syncfusion.Blazor;
 
 namespace SyncfusionHelpDesk
 {
