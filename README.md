@@ -17,3 +17,6 @@
 2) Open **appsettings.json**: 
 - *Uncomment* the '//' before **SENDGRID_APIKEY** and enter your **SendGrid API key** in place of: **{{ uncomment and enter your key from app.sendgrid.com }}**
 - *Uncomment* the '//' before **SenderEmail** and enter your Email address in place of: **{{ uncomment and enter your email address }}**
+
+### Also See
+* [SyncfusionHelpDesk - Blazor WebAssembly version](https://github.com/ADefWebserver/SyncfusionHelpDeskClient)
