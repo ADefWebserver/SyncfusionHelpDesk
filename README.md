@@ -2,6 +2,8 @@
 
 ![Screenshot](SyncfusionHelpDesk.png)
 
+## Covered in the Book:
+[Blazor Succinctly](https://www.syncfusion.com/ebooks/blazor-succinctly)
 
 ### To Install
 
