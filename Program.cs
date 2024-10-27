@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Syncfusion.Blazor;
 using SyncfusionHelpDesk.Components;
 using SyncfusionHelpDesk.Components.Account;
 using SyncfusionHelpDesk.Data;
@@ -40,6 +41,8 @@ namespace SyncfusionHelpDesk
                 .AddDefaultTokenProviders();
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+            builder.Services.AddSyncfusionBlazor();
 
             var app = builder.Build();
 
