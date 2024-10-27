@@ -1,0 +1,156 @@
+﻿@page "/"
+@* @using System.Security.Claims;
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using SyncfusionHelpDesk.Data;
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+@inject EmailSender _EmailSender
+@inherits OwningComponentBase<SyncfusionHelpDeskService>
+
+@if (CurrentUser.IsInRole(ADMINISTRATION_ROLE))
+{
+    <p>You are an Administrator named: <b>@CurrentUser.Identity.Name</b></p>
+}
+<SfToast ID="toast_default"
+          @ref="ToastObj"
+          Title="Help Desk Ticket"
+          Content="@ToastContent" TimeOut="5000">
+    <ToastPosition X="Right"></ToastPosition>
+</SfToast>
+<h3>New Help Desk Ticket</h3>
+<br />
+<EditForm ID="new-doctor-form" Model="@objHelpDeskTicket" 
+          OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div>
+        <SfDropDownList TItem="HelpDeskStatus" TValue="string" 
+                         PopupHeight="230px" Index=0
+                         Placeholder="Ticket Status" 
+                         DataSource="@HelpDeskStatus.Statuses"
+                         FloatLabelType="@FloatLabelType.Always"
+                         @bind-Value="@objHelpDeskTicket.TicketStatus">
+            <DropDownListFieldSettings Text="Text" 
+                                       Value="ID"></DropDownListFieldSettings>
+        </SfDropDownList>
+    </div>
+    <div>
+        <SfDatePicker ID="TicketDate" Placeholder="Ticket Date" 
+                       FloatLabelType="@FloatLabelType.Always"
+                       @bind-Value="@objHelpDeskTicket.TicketDate"
+                       Max="DateTime.Now" 
+                       ShowClearButton="false"></SfDatePicker>
+        <ValidationMessage For="@(() => objHelpDeskTicket.TicketDate)" />
+    </div>
+    <div>
+        <SfTextBox Placeholder="Ticket Description" 
+                    FloatLabelType="@FloatLabelType.Always"
+                    @bind-Value="@objHelpDeskTicket.TicketDescription"></SfTextBox>
+        <ValidationMessage For="@(() => objHelpDeskTicket.TicketDescription)" />
+    </div>
+    <div>
+        <SfTextBox Placeholder="Requester Email" 
+                    FloatLabelType="@FloatLabelType.Always"
+                    @bind-Value="@objHelpDeskTicket.TicketRequesterEmail"></SfTextBox>
+        <ValidationMessage For="@(() => objHelpDeskTicket.TicketRequesterEmail)" />
+    </div>
+    <br /><br />
+    <div class="e-footer-content">
+        <div class="button-container">
+            <button type="submit" class="e-btn e-normal e-primary">Save</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
+    string ADMINISTRATION_ROLE = "Administrators";
+
+    SfToast ToastObj;
+    private string ToastContent { get; set; }  = "";
+
+    HelpDeskTicket objHelpDeskTicket = 
+        new HelpDeskTicket() { TicketDate = DateTime.Now };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Ensure there is a ADMINISTRATION_ROLE
+        var RoleResult = await _RoleManager.FindByNameAsync(ADMINISTRATION_ROLE);
+        if (RoleResult == null)
+        {
+            // Create ADMINISTRATION_ROLE Role
+            await _RoleManager.CreateAsync(new IdentityRole(ADMINISTRATION_ROLE));
+        }
+
+        // Try to get the Administrator account
+        var user = await _UserManager.FindByNameAsync("Administrator@Email");
+
+        // Administrator may not be created yet
+        if (user != null)
+        {
+            // Is Administrator account in the Administrator role?
+            var UserResult = 
+                await _UserManager.IsInRoleAsync(user, ADMINISTRATION_ROLE);
+
+            if (!UserResult)
+            {
+                // Put admin in Administrator role
+                await _UserManager.AddToRoleAsync(user, ADMINISTRATION_ROLE);
+            }
+        }
+
+        // Get the current user
+        // Note: User may not be logged in
+        CurrentUser = (await authenticationStateTask).User;
+    }
+
+    public async Task HandleValidSubmit(EditContext context)
+    {
+        try
+        {
+            // Create a HelpDeskTickets
+            HelpDeskTickets NewHelpDeskTickets = 
+                new HelpDeskTickets();
+
+            // Set the values to the values entered 
+            // in the form
+            NewHelpDeskTickets.TicketDate = 
+                objHelpDeskTicket.TicketDate;
+            NewHelpDeskTickets.TicketDescription = 
+                objHelpDeskTicket.TicketDescription;
+            NewHelpDeskTickets.TicketRequesterEmail = 
+                objHelpDeskTicket.TicketRequesterEmail;
+            NewHelpDeskTickets.TicketStatus = 
+                objHelpDeskTicket.TicketStatus;
+            // Create a new GUID for this Help Desk Ticket
+            NewHelpDeskTickets.TicketGuid = 
+                System.Guid.NewGuid().ToString();
+
+            // Save the new Help Desk Ticket
+            var result = 
+                @Service.CreateTicketAsync(NewHelpDeskTickets);
+
+            // Clear the form
+            objHelpDeskTicket = new HelpDeskTicket();
+
+            // Show the Toast
+            ToastContent = "Saved!";
+            await Task.Delay(100);
+            //await this.ToastObj.Show();
+
+            // Send Email
+            await _EmailSender.SendEmail(
+                "Help Desk Ticket Created",
+                "", // No need to pass an email because it goes to Administrator
+                NewHelpDeskTickets.TicketGuid
+                );
+        }
+        catch (Exception ex)
+        {
+            ToastContent = ex.GetBaseException().Message;
+            //await this.ToastObj.Show();
+        }
+    }
+} *@
