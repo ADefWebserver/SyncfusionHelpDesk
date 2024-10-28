@@ -8,14 +8,14 @@
 @using Syncfusion.Blazor.Notifications
 @using SyncfusionHelpDesk.Data;
 @using SyncfusionHelpDesk.Models
-@inject UserManager<ApplicationUser> _UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject RoleManager<IdentityRole> _RoleManager
 @inject EmailSender _EmailSender
 @inherits OwningComponentBase<SyncfusionHelpDeskService>
 
-@if (CurrentUser.IsInRole(ADMINISTRATION_ROLE))
+@if (CurrentUser != "")
 {
-    <p>You are an Administrator named: <b>@CurrentUser.Identity.Name</b></p>
+    <p>You are: <b>@CurrentUser</b></p>
 }
 <SfToast ID="toast_default"
           @ref="ToastObj"
@@ -71,7 +71,7 @@
     #nullable disable
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
-    ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
+    private string CurrentUser = "";
     string ADMINISTRATION_ROLE = "Administrators";
 
     SfToast ToastObj;
@@ -90,26 +90,14 @@
             await _RoleManager.CreateAsync(new IdentityRole(ADMINISTRATION_ROLE));
         }
 
-        // Try to get the Administrator account
-        var user = await _UserManager.FindByNameAsync("Administrator@Email");
-
-        // Administrator may not be created yet
-        if (user != null)
-        {
-            // Is Administrator account in the Administrator role?
-            var UserResult = 
-                await _UserManager.IsInRoleAsync(user, ADMINISTRATION_ROLE);
-
-            if (!UserResult)
-            {
-                // Put admin in Administrator role
-                await _UserManager.AddToRoleAsync(user, ADMINISTRATION_ROLE);
-            }
-        }
-
         // Get the current user
-        // Note: User may not be logged in
-        CurrentUser = (await authenticationStateTask).User;
+        var authState =
+        await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity is not null && authState.User.Identity.IsAuthenticated)
+        {
+            // Set the current user
+            CurrentUser = authState.User.Identity.Name;
+        }
     }
 
     public async Task HandleValidSubmit(EditContext context)

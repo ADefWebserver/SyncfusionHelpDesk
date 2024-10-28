@@ -32,6 +32,7 @@ namespace SyncfusionHelpDesk
             })
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddSignInManager()
             .AddDefaultTokenProviders();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
