@@ -67,11 +67,12 @@ namespace SyncfusionHelpDesk
             }
 
             app.UseHttpsRedirection();
-            app.UseAntiforgery();
 
             // Authentication and Authorization Middleware
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseAntiforgery(); // Must be placed after UseAuthentication and UseAuthorization
 
             app.MapStaticAssets();
             app.MapRazorComponents<App>()
