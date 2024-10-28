@@ -1,8 +1,13 @@
 ﻿@page "/"
-@*@using System.Security.Claims;
+@using System.Security.Claims;
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.Components.Authorization;
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Notifications
 @using SyncfusionHelpDesk.Data;
+@using SyncfusionHelpDesk.Models
 @inject UserManager<IdentityUser> _UserManager
 @inject RoleManager<IdentityRole> _RoleManager
 @inject EmailSender _EmailSender
@@ -63,6 +68,7 @@
 </EditForm>
 
 @code {
+    #nullable disable
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
@@ -111,8 +117,8 @@
         try
         {
             // Create a HelpDeskTickets
-            HelpDeskTickets NewHelpDeskTickets = 
-                new HelpDeskTickets();
+            HelpDeskTicket NewHelpDeskTickets = 
+                new HelpDeskTicket();
 
             // Set the values to the values entered 
             // in the form
@@ -153,4 +159,4 @@
             //await this.ToastObj.Show();
         }
     }
-} *@
+} 

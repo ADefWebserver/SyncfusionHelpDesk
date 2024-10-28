@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Syncfusion.Blazor;
 using SyncfusionHelpDesk.Components;
 using SyncfusionHelpDesk.Components.Account;
 using SyncfusionHelpDesk.Data;
+using SyncfusionHelpDesk.Models;
 
 namespace SyncfusionHelpDesk
 {
@@ -42,7 +44,16 @@ namespace SyncfusionHelpDesk
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+            // Syncfusion Support
             builder.Services.AddSyncfusionBlazor();
+
+            // To access HelpDesk tables
+            builder.Services.AddDbContext<SyncfusionHelpDeskContext>(options =>
+            options.UseSqlServer(
+                builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<SyncfusionHelpDeskService>();
+            builder.Services.AddScoped<EmailSender>();
 
             var app = builder.Build();
 
