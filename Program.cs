@@ -30,6 +30,7 @@ namespace SyncfusionHelpDesk
             {
                 options.SignIn.RequireConfirmedAccount = true;
             })
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
