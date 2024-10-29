@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using SyncfusionHelpDesk.Models;
 using System;
 using System.Collections.Generic;
@@ -9,16 +10,10 @@ namespace SyncfusionHelpDesk.Data
 {
     public class SyncfusionHelpDeskService
     {
-        private readonly SyncfusionHelpDeskContext _context;
-
-        public SyncfusionHelpDeskService(
-            SyncfusionHelpDeskContext context)
-        {
-            _context = context;
-        }
+        public SyncfusionHelpDeskService() { }
 
         public IQueryable<HelpDeskTicket>
-            GetHelpDeskTickets()
+            GetHelpDeskTickets(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory)
         {
             // Return all HelpDesk Tickets as IQueryable
             // SfGrid will use this to only pull records 
@@ -26,13 +21,17 @@ namespace SyncfusionHelpDesk.Data
             // Note: AsNoTracking() is used because it is 
             // quicker to execute and we do not need
             // Entity Framework change tracking at this point
+
+            var _context = dbContextFactory.CreateDbContext();
             return _context.HelpDeskTickets.AsNoTracking();
         }
 
         public async Task<HelpDeskTicket>
-            GetHelpDeskTicketAsync(string HelpDeskTicketGuid)
+            GetHelpDeskTicketAsync(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory, string HelpDeskTicketGuid)
         {
             // Get the existing record
+            var _context = dbContextFactory.CreateDbContext();
+
             var ExistingTicket = await _context.HelpDeskTickets
                 .Include(x => x.HelpDeskTicketDetails)
                 .Where(x => x.TicketGuid == HelpDeskTicketGuid)
@@ -43,11 +42,13 @@ namespace SyncfusionHelpDesk.Data
         }
 
         public Task<HelpDeskTicket>
-            CreateTicketAsync(HelpDeskTicket newHelpDeskTickets)
+            CreateTicketAsync(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory, HelpDeskTicket newHelpDeskTickets)
         {
             try
             {
                 // Add a new Help Desk Ticket
+                var _context = dbContextFactory.CreateDbContext();
+
                 _context.HelpDeskTickets.Add(newHelpDeskTickets);
                 _context.SaveChanges();
 
@@ -55,18 +56,20 @@ namespace SyncfusionHelpDesk.Data
             }
             catch (Exception ex)
             {
-                DetachAllEntities();
+                DetachAllEntities(dbContextFactory);
                 throw ex;
             }
         }
 
         public Task<bool>
-            UpdateTicketAsync(
+            UpdateTicketAsync(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory,
             HelpDeskTicket UpdatedHelpDeskTickets)
         {
             try
             {
                 // Get the existing record
+                var _context = dbContextFactory.CreateDbContext();
+
                 var ExistingTicket =
                     _context.HelpDeskTickets
                     .Where(x => x.Id == UpdatedHelpDeskTickets.Id)
@@ -124,16 +127,18 @@ namespace SyncfusionHelpDesk.Data
             }
             catch (Exception ex)
             {
-                DetachAllEntities();
+                DetachAllEntities(dbContextFactory);
                 throw ex;
             }
         }
 
         public Task<bool>
-            DeleteHelpDeskTicketsAsync(
+            DeleteHelpDeskTicketsAsync(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory,
             HelpDeskTicket DeleteHelpDeskTickets)
         {
             // Get the existing record
+            var _context = dbContextFactory.CreateDbContext();
+
             var ExistingTicket =
                 _context.HelpDeskTickets
                 .Include(x => x.HelpDeskTicketDetails)
@@ -157,10 +162,12 @@ namespace SyncfusionHelpDesk.Data
         // Utility
 
         #region public void DetachAllEntities()
-        public void DetachAllEntities()
+        public void DetachAllEntities(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory)
         {
             // When we have an error we need 
             // to remove EF Core change tracking
+            var _context = dbContextFactory.CreateDbContext();
+
             var changedEntriesCopy = _context.ChangeTracker.Entries()
                 .Where(e => e.State == EntityState.Added ||
                             e.State == EntityState.Modified ||

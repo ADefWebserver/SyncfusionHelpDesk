@@ -47,7 +47,7 @@ namespace SyncfusionHelpDesk
             builder.Services.AddSyncfusionBlazor();
 
             // To access HelpDesk tables
-            builder.Services.AddDbContext<SyncfusionHelpDeskContext>(options =>
+            builder.Services.AddDbContextFactory<SyncfusionHelpDeskContext>(options =>
                 options.UseSqlServer(connectionString));
 
             builder.Services.AddScoped<SyncfusionHelpDeskService>();

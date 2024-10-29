@@ -2,16 +2,18 @@
 @using System.Security.Claims;
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.EntityFrameworkCore
 @using Syncfusion.Blazor.Calendars
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Inputs
 @using Syncfusion.Blazor.Notifications
 @using SyncfusionHelpDesk.Data;
 @using SyncfusionHelpDesk.Models
+@inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
+@inject SyncfusionHelpDeskService SyncfusionHelpDeskService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject RoleManager<IdentityRole> _RoleManager
 @inject EmailSender _EmailSender
-@inherits OwningComponentBase<SyncfusionHelpDeskService>
 
 @if (CurrentUser != "")
 {
@@ -124,7 +126,7 @@
 
             // Save the new Help Desk Ticket
             var result = 
-                @Service.CreateTicketAsync(NewHelpDeskTickets);
+                SyncfusionHelpDeskService.CreateTicketAsync(DbFactory, NewHelpDeskTickets);
 
             // Clear the form
             objHelpDeskTicket = new HelpDeskTicket();
