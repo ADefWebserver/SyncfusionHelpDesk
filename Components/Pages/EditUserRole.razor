@@ -1,0 +1,66 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SyncfusionHelpDesk.Data
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="button-container">
+    <button @onclick="ToggleRole" class="e-btn e-normal e-primary">@buttonText</button>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<bool> OnRoleChanged { get; set; } // Expose event to parent
+
+    string ADMINISTRATION_ROLE = "Administrators";
+    private string buttonText = "Loading...";
+    private ApplicationUser currentUser;
+    private bool isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserAndRole();
+    }
+
+    private async Task LoadUserAndRole()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            currentUser = await UserManager.FindByNameAsync(user.Identity.Name);
+            isAdmin = await UserManager.IsInRoleAsync(currentUser, ADMINISTRATION_ROLE);
+            UpdateButtonText();
+        }
+        else
+        {
+            buttonText = "Not Logged In";
+        }
+    }
+
+    private void UpdateButtonText()
+    {
+        buttonText = isAdmin ? "Make Me a Normal User" : "Make Me an Administrator";
+    }
+
+    private async Task ToggleRole()
+    {
+        if (currentUser != null)
+        {
+            if (isAdmin)
+            {
+                await UserManager.RemoveFromRoleAsync(currentUser, ADMINISTRATION_ROLE);
+                isAdmin = false;
+            }
+            else
+            {
+                await UserManager.AddToRoleAsync(currentUser, ADMINISTRATION_ROLE);
+                isAdmin = true;
+            }
+
+            UpdateButtonText();
+            await OnRoleChanged.InvokeAsync(isAdmin); // Raise event to notify parent
+        }
+    }
+}

@@ -14,54 +14,58 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject RoleManager<IdentityRole> _RoleManager
 @inject EmailSender _EmailSender
+@inject NavigationManager NavigationManager
 
 @if (CurrentUser != "")
 {
+    <EditUserRole OnRoleChanged="HandleRoleChange" />
+    <br />
     <p>You are: <b>@CurrentUser</b></p>
 }
+
 <SfToast ID="toast_default"
-          @ref="ToastObj"
-          Title="Help Desk Ticket"
-          Content="@ToastContent" TimeOut="5000">
+         @ref="ToastObj"
+         Title="Help Desk Ticket"
+         Content="@ToastContent" TimeOut="5000">
     <ToastPosition X="Right"></ToastPosition>
 </SfToast>
 <h3>New Help Desk Ticket</h3>
 <br />
-<EditForm ID="new-doctor-form" Model="@objHelpDeskTicket" 
+<EditForm ID="new-doctor-form" Model="@objHelpDeskTicket"
           OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div>
-        <SfDropDownList TItem="HelpDeskStatus" TValue="string" 
-                         PopupHeight="230px" Index=0
-                         Placeholder="Ticket Status" 
-                         DataSource="@HelpDeskStatus.Statuses"
-                         FloatLabelType="@FloatLabelType.Always"
-                         @bind-Value="@objHelpDeskTicket.TicketStatus">
-            <DropDownListFieldSettings Text="Text" 
+        <SfDropDownList TItem="HelpDeskStatus" TValue="string"
+                        PopupHeight="230px" Index=0
+                        Placeholder="Ticket Status"
+                        DataSource="@HelpDeskStatus.Statuses"
+                        FloatLabelType="@FloatLabelType.Always"
+                        @bind-Value="@objHelpDeskTicket.TicketStatus">
+            <DropDownListFieldSettings Text="Text"
                                        Value="ID"></DropDownListFieldSettings>
         </SfDropDownList>
     </div>
     <div>
-        <SfDatePicker ID="TicketDate" Placeholder="Ticket Date" 
-                       FloatLabelType="@FloatLabelType.Always"
-                       @bind-Value="@objHelpDeskTicket.TicketDate"
-                       Max="DateTime.Now" 
-                       ShowClearButton="false"></SfDatePicker>
+        <SfDatePicker ID="TicketDate" Placeholder="Ticket Date"
+                      FloatLabelType="@FloatLabelType.Always"
+                      @bind-Value="@objHelpDeskTicket.TicketDate"
+                      Max="DateTime.Now"
+                      ShowClearButton="false"></SfDatePicker>
         <ValidationMessage For="@(() => objHelpDeskTicket.TicketDate)" />
     </div>
     <div>
-        <SfTextBox Placeholder="Ticket Description" 
-                    FloatLabelType="@FloatLabelType.Always"
-                    @bind-Value="@objHelpDeskTicket.TicketDescription"></SfTextBox>
+        <SfTextBox Placeholder="Ticket Description"
+                   FloatLabelType="@FloatLabelType.Always"
+                   @bind-Value="@objHelpDeskTicket.TicketDescription"></SfTextBox>
         <ValidationMessage For="@(() => objHelpDeskTicket.TicketDescription)" />
     </div>
     <div>
-        <SfTextBox Placeholder="Requester Email" 
-                    FloatLabelType="@FloatLabelType.Always"
-                    @bind-Value="@objHelpDeskTicket.TicketRequesterEmail"></SfTextBox>
+        <SfTextBox Placeholder="Requester Email"
+                   FloatLabelType="@FloatLabelType.Always"
+                   @bind-Value="@objHelpDeskTicket.TicketRequesterEmail"></SfTextBox>
         <ValidationMessage For="@(() => objHelpDeskTicket.TicketRequesterEmail)" />
     </div>
-    <br /><br />
+    <br />
     <div class="e-footer-content">
         <div class="button-container">
             <button type="submit" class="e-btn e-normal e-primary">Save</button>
@@ -70,16 +74,16 @@
 </EditForm>
 
 @code {
-    #nullable disable
+#nullable disable
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
     private string CurrentUser = "";
     string ADMINISTRATION_ROLE = "Administrators";
 
     SfToast ToastObj;
-    private string ToastContent { get; set; }  = "";
+    private string ToastContent { get; set; } = "";
 
-    HelpDeskTicket objHelpDeskTicket = 
+    HelpDeskTicket objHelpDeskTicket =
         new HelpDeskTicket() { TicketDate = DateTime.Now };
 
     protected override async Task OnInitializedAsync()
@@ -96,30 +100,36 @@
         }
     }
 
+    private void HandleRoleChange(bool isAdmin)
+    {
+        // Reload the entire page
+        NavigationManager.NavigateTo("/", true);
+    }
+
     public async Task HandleValidSubmit(EditContext context)
     {
         try
         {
             // Create a HelpDeskTickets
-            HelpDeskTicket NewHelpDeskTickets = 
+            HelpDeskTicket NewHelpDeskTickets =
                 new HelpDeskTicket();
 
-            // Set the values to the values entered 
+            // Set the values to the values entered
             // in the form
-            NewHelpDeskTickets.TicketDate = 
+            NewHelpDeskTickets.TicketDate =
                 objHelpDeskTicket.TicketDate;
-            NewHelpDeskTickets.TicketDescription = 
+            NewHelpDeskTickets.TicketDescription =
                 objHelpDeskTicket.TicketDescription;
-            NewHelpDeskTickets.TicketRequesterEmail = 
+            NewHelpDeskTickets.TicketRequesterEmail =
                 objHelpDeskTicket.TicketRequesterEmail;
-            NewHelpDeskTickets.TicketStatus = 
+            NewHelpDeskTickets.TicketStatus =
                 objHelpDeskTicket.TicketStatus;
             // Create a new GUID for this Help Desk Ticket
-            NewHelpDeskTickets.TicketGuid = 
+            NewHelpDeskTickets.TicketGuid =
                 System.Guid.NewGuid().ToString();
 
             // Save the new Help Desk Ticket
-            var result = 
+            var result =
                 SyncfusionHelpDeskService.CreateTicketAsync(DbFactory, NewHelpDeskTickets);
 
             // Clear the form
