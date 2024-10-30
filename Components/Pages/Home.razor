@@ -84,17 +84,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Ensure there is a ADMINISTRATION_ROLE
-        var RoleResult = await _RoleManager.FindByNameAsync(ADMINISTRATION_ROLE);
-        if (RoleResult == null)
-        {
-            // Create ADMINISTRATION_ROLE Role
-            await _RoleManager.CreateAsync(new IdentityRole(ADMINISTRATION_ROLE));
-        }
-
         // Get the current user
         var authState =
         await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        // If the user is authenticated set the current user
         if (authState.User.Identity is not null && authState.User.Identity.IsAuthenticated)
         {
             // Set the current user
@@ -134,7 +128,7 @@
             // Show the Toast
             ToastContent = "Saved!";
             await Task.Delay(100);
-            //await this.ToastObj.Show();
+            await this.ToastObj.ShowAsync();
 
             // Send Email
             await _EmailSender.SendEmail(
@@ -146,7 +140,7 @@
         catch (Exception ex)
         {
             ToastContent = ex.GetBaseException().Message;
-            //await this.ToastObj.Show();
+            await this.ToastObj.ShowAsync();
         }
     }
 } 

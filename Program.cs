@@ -12,7 +12,7 @@ namespace SyncfusionHelpDesk
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -80,7 +80,24 @@ namespace SyncfusionHelpDesk
 
             app.MapAdditionalIdentityEndpoints();
 
-            app.Run();
+            // Ensure the Administrator role is created at startup
+            await CreateRoles(app.Services);
+
+            await app.RunAsync();
+        }
+
+        // Role creation logic
+        private static async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            // Check if the Administrator role exists, if not, create it
+            if (!await roleManager.RoleExistsAsync("Administrators"))
+            {
+                var adminRole = new IdentityRole("Administrators");
+                await roleManager.CreateAsync(adminRole);
+            }
         }
     }
 }
