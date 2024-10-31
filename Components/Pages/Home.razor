@@ -3,10 +3,6 @@
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.Components.Authorization;
 @using Microsoft.EntityFrameworkCore
-@using Syncfusion.Blazor.Calendars
-@using Syncfusion.Blazor.DropDowns
-@using Syncfusion.Blazor.Inputs
-@using Syncfusion.Blazor.Notifications
 @using SyncfusionHelpDesk.Data;
 @using SyncfusionHelpDesk.Models
 @inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
@@ -75,8 +71,6 @@
 
 @code {
 #nullable disable
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
     private string CurrentUser = "";
     string ADMINISTRATION_ROLE = "Administrators";
 

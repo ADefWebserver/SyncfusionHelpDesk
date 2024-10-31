@@ -45,92 +45,76 @@ namespace SyncfusionHelpDesk.Data
         public Task<HelpDeskTicket>
             CreateTicketAsync(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory, HelpDeskTicket newHelpDeskTickets)
         {
-            try
-            {
-                // Add a new Help Desk Ticket
-                var _context = dbContextFactory.CreateDbContext();
+            // Add a new Help Desk Ticket
+            var _context = dbContextFactory.CreateDbContext();
 
-                _context.HelpDeskTickets.Add(newHelpDeskTickets);
-                _context.SaveChanges();
+            _context.HelpDeskTickets.Add(newHelpDeskTickets);
+            _context.SaveChanges();
 
-                return Task.FromResult(newHelpDeskTickets);
-            }
-            catch (Exception ex)
-            {
-                DetachAllEntities(dbContextFactory);
-                throw ex;
-            }
+            return Task.FromResult(newHelpDeskTickets);
         }
 
         public Task<bool>
             UpdateTicketAsync(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory,
             HelpDeskTicket UpdatedHelpDeskTickets)
         {
-            try
+            // Get the existing record
+            var _context = dbContextFactory.CreateDbContext();
+
+            var ExistingTicket =
+                _context.HelpDeskTickets
+                .Where(x => x.Id == UpdatedHelpDeskTickets.Id)
+                .FirstOrDefault();
+
+            if (ExistingTicket != null)
             {
-                // Get the existing record
-                var _context = dbContextFactory.CreateDbContext();
+                ExistingTicket.TicketDate =
+                    UpdatedHelpDeskTickets.TicketDate;
 
-                var ExistingTicket =
-                    _context.HelpDeskTickets
-                    .Where(x => x.Id == UpdatedHelpDeskTickets.Id)
-                    .FirstOrDefault();
+                ExistingTicket.TicketDescription =
+                    UpdatedHelpDeskTickets.TicketDescription;
 
-                if (ExistingTicket != null)
+                ExistingTicket.TicketGuid =
+                    UpdatedHelpDeskTickets.TicketGuid;
+
+                ExistingTicket.TicketRequesterEmail =
+                    UpdatedHelpDeskTickets.TicketRequesterEmail;
+
+                ExistingTicket.TicketStatus =
+                    UpdatedHelpDeskTickets.TicketStatus;
+
+                // Insert any new TicketDetails
+                if (UpdatedHelpDeskTickets.HelpDeskTicketDetails != null)
                 {
-                    ExistingTicket.TicketDate =
-                        UpdatedHelpDeskTickets.TicketDate;
-
-                    ExistingTicket.TicketDescription =
-                        UpdatedHelpDeskTickets.TicketDescription;
-
-                    ExistingTicket.TicketGuid =
-                        UpdatedHelpDeskTickets.TicketGuid;
-
-                    ExistingTicket.TicketRequesterEmail =
-                        UpdatedHelpDeskTickets.TicketRequesterEmail;
-
-                    ExistingTicket.TicketStatus =
-                        UpdatedHelpDeskTickets.TicketStatus;                    
-
-                    // Insert any new TicketDetails
-                    if (UpdatedHelpDeskTickets.HelpDeskTicketDetails != null)
+                    foreach (var item in
+                        UpdatedHelpDeskTickets.HelpDeskTicketDetails)
                     {
-                        foreach (var item in 
-                            UpdatedHelpDeskTickets.HelpDeskTicketDetails)
+                        if (item.Id == 0)
                         {
-                            if(item.Id == 0)
-                            {
-                                // Create New HelpDeskTicketDetails record
-                                HelpDeskTicketDetail newHelpDeskTicketDetails = 
-                                    new HelpDeskTicketDetail();
-                                newHelpDeskTicketDetails.HelpDeskTicketId = 
-                                    UpdatedHelpDeskTickets.Id;
-                                newHelpDeskTicketDetails.TicketDetailDate = 
-                                    DateTime.Now;
-                                newHelpDeskTicketDetails.TicketDescription = 
-                                    item.TicketDescription;
+                            // Create New HelpDeskTicketDetails record
+                            HelpDeskTicketDetail newHelpDeskTicketDetails =
+                                new HelpDeskTicketDetail();
+                            newHelpDeskTicketDetails.HelpDeskTicketId =
+                                UpdatedHelpDeskTickets.Id;
+                            newHelpDeskTicketDetails.TicketDetailDate =
+                                DateTime.Now;
+                            newHelpDeskTicketDetails.TicketDescription =
+                                item.TicketDescription;
 
-                                _context.HelpDeskTicketDetails
-                                    .Add(newHelpDeskTicketDetails);
-                            }
+                            _context.HelpDeskTicketDetails
+                                .Add(newHelpDeskTicketDetails);
                         }
                     }
-
-                    _context.SaveChanges();
-                }
-                else
-                {
-                    return Task.FromResult(false);
                 }
 
-                return Task.FromResult(true);
+                _context.SaveChanges();
             }
-            catch (Exception ex)
+            else
             {
-                DetachAllEntities(dbContextFactory);
-                throw ex;
+                return Task.FromResult(false);
             }
+
+            return Task.FromResult(true);
         }
 
         public Task<bool>
@@ -159,26 +143,5 @@ namespace SyncfusionHelpDesk.Data
 
             return Task.FromResult(true);
         }
-
-        // Utility
-
-        #region public void DetachAllEntities()
-        public void DetachAllEntities(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory)
-        {
-            // When we have an error we need 
-            // to remove EF Core change tracking
-            var _context = dbContextFactory.CreateDbContext();
-
-            var changedEntriesCopy = _context.ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Added ||
-                            e.State == EntityState.Modified ||
-                            e.State == EntityState.Deleted)
-                .ToList();
-
-            foreach (var entry in changedEntriesCopy)
-                entry.State = EntityState.Detached;
-        }
-        #endregion
-
     }
 }
