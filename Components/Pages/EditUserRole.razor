@@ -8,11 +8,6 @@
 <div class="button-container">
     <SfButton OnClick="@ToggleRole"
               CssClass="e-secondary" Content="@buttonText"></SfButton>&nbsp;
-    @if (isAdmin)
-    {
-        <SfButton OnClick="@(() => NavigationManager.NavigateTo("/administration"))"
-                  CssClass="e-primary" Content="Administration"></SfButton>
-    }
 </div>
 <br />
 @code {
@@ -49,7 +44,7 @@
 
     private void UpdateButtonText()
     {
-        buttonText = isAdmin ? "Make Me a Normal User" : "Make Me an Administrator";
+        buttonText = isAdmin ? "Make me a normal user" : "Make me an administrator";
     }
 
     private async Task ToggleRole()
@@ -68,7 +63,7 @@
             }
 
             UpdateButtonText();
-            await OnRoleChanged.InvokeAsync(isAdmin); // Raise event to notify parent
+            await OnRoleChanged.InvokeAsync(); // Raise event to notify parent
         }
     }
 }

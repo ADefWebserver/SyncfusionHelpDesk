@@ -67,7 +67,6 @@
 @code {
 #nullable disable
     ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
-    string ADMINISTRATION_ROLE = "Administrators";
 
     SfToast ToastObj;
     private string ToastContent { get; set; } = "";
@@ -82,7 +81,7 @@
         CurrentUser = authState.User;
     }
 
-    private void HandleRoleChange(bool isAdmin)
+    private void HandleRoleChange()
     {
         // Reload the entire page
         NavigationManager.NavigateTo("/", true);
@@ -106,6 +105,7 @@
                 objHelpDeskTicket.TicketRequesterEmail;
             NewHelpDeskTickets.TicketStatus =
                 objHelpDeskTicket.TicketStatus;
+
             // Create a new GUID for this Help Desk Ticket
             NewHelpDeskTickets.TicketGuid =
                 System.Guid.NewGuid().ToString();

@@ -14,7 +14,7 @@ namespace SyncfusionHelpDesk.Data
         public SyncfusionHelpDeskService() { }
 
         public IQueryable<HelpDeskTicket>
-            GetHelpDeskTickets(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory)
+            GetHelpDeskTickets(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory, bool IsAdmin, string paramEmail)
         {
             // Return all HelpDesk Tickets as IQueryable
             // SfGrid will use this to only pull records 
@@ -24,7 +24,19 @@ namespace SyncfusionHelpDesk.Data
             // Entity Framework change tracking at this point
 
             var _context = dbContextFactory.CreateDbContext();
-            return _context.HelpDeskTickets.AsNoTracking();
+
+            if (IsAdmin)
+            {
+                // Admin User
+                return _context.HelpDeskTickets.AsNoTracking();
+            }
+            else
+            {
+                // Regular User
+                return _context.HelpDeskTickets
+                    .Where(x => x.TicketRequesterEmail == paramEmail)
+                    .AsNoTracking();
+            }
         }
 
         public async Task<HelpDeskTicket>

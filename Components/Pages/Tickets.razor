@@ -1,12 +1,18 @@
-﻿@page "/administration"
+﻿@page "/tickets"
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using SyncfusionHelpDesk.Data;
 @using SyncfusionHelpDesk.Models
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<ApplicationUser> UserManager
 @inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
 @inject SyncfusionHelpDeskService SyncfusionHelpDeskService
 @inject EmailSender _EmailSender
-<AuthorizeView Roles="Administrators">
+<AuthorizeView>
     <Authorized>
+        <h1>@PageTitle</h1>
         <div>
             <div id="target" style="height: 500px;">
                 <SfGrid ID="Grid"
@@ -27,10 +33,13 @@
                                                    ButtonOption="@(new CommandButtonOptions()
                                                                { Content = "Edit" })">
                                 </GridCommandColumn>
-                                <GridCommandColumn Type=CommandButtonType.Delete
-                                                   ButtonOption="@(new CommandButtonOptions()
+                                @if (isAdmin)
+                                {
+                                    <GridCommandColumn Type=CommandButtonType.Delete
+                                                       ButtonOption="@(new CommandButtonOptions()
                                                                { Content = "Delete" })">
-                                </GridCommandColumn>
+                                    </GridCommandColumn>
+                                }
                             </GridCommandColumns>
                         </GridColumn>
                         <GridColumn IsPrimaryKey="true" Field=@nameof(HelpDeskTicket.Id)
@@ -99,21 +108,47 @@
             </DialogTemplates>
         </SfDialog>
     </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to view this page.</p>
+    </NotAuthorized>
 </AuthorizeView>
+
 @code {
 #nullable disable
+    ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
+
+    private string PageTitle = "Administration";
+    private string ADMINISTRATION_ROLE = "Administrators";
+    private bool isAdmin = false;
+
     SfGrid<HelpDeskTicket> gridObj;
     public IQueryable<HelpDeskTicket> colHelpDeskTickets { get; set; }
     private HelpDeskTicket SelectedTicket = new HelpDeskTicket();
     public bool EditDialogVisibility { get; set; } = false;
     public bool DeleteRecordConfirmVisibility { get; set; } = false;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        // Get the current user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        CurrentUser = authState.User;
+
+        // Check if the current user is an Administrator
+        if (CurrentUser.Identity?.IsAuthenticated == true)
+        {
+            var CurrentApplicationUser = await UserManager.FindByNameAsync(CurrentUser.Identity.Name);
+
+            // See if the current user is an Administrator
+            isAdmin = await UserManager.IsInRoleAsync(CurrentApplicationUser, ADMINISTRATION_ROLE);
+        }
+
         // GetHelpDeskTickets returns IQueryable that the
         // SfGrid will use to only pull records for the
         // page that is currently selected
-        colHelpDeskTickets = SyncfusionHelpDeskService.GetHelpDeskTickets(DbFactory);
+        colHelpDeskTickets = SyncfusionHelpDeskService.GetHelpDeskTickets(DbFactory, isAdmin, CurrentUser.Identity.Name);
+
+        // Set PageTitle
+        PageTitle = isAdmin ? "Administration" : "My Help Desk Tickets";
     }
 
     public async void OnCommandClicked(

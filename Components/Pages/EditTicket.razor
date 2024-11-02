@@ -10,7 +10,7 @@
 @inject SyncfusionHelpDeskService SyncfusionHelpDeskService
 
 <div>
-    <SfDropDownList TItem="HelpDeskStatus" Enabled="!isAdmin"
+    <SfDropDownList TItem="HelpDeskStatus" Enabled="isAdmin"
                     TValue="string" PopupHeight="230px" Index=0
                     Placeholder="Ticket Status"
                     DataSource="@HelpDeskStatus.Statuses"
@@ -22,7 +22,7 @@
     </SfDropDownList>
 </div>
 <div>
-    <SfDatePicker ID="TicketDate" Enabled="!isAdmin"
+    <SfDatePicker ID="TicketDate" Enabled="isAdmin"
                   Placeholder="Ticket Date"
                   FloatLabelType="@FloatLabelType.Always"
                   @bind-Value="@SelectedTicket.TicketDate"
@@ -31,17 +31,18 @@
     </SfDatePicker>
 </div>
 <div>
-    <SfTextBox Enabled="!isAdmin" Placeholder="Ticket Description"
+    <SfTextBox Enabled="isAdmin" Placeholder="Ticket Description"
                FloatLabelType="@FloatLabelType.Always"
                @bind-Value="@SelectedTicket.TicketDescription">
     </SfTextBox>
 </div>
 <div>
-    <SfTextBox Enabled="!isAdmin" Placeholder="Requester Email"
+    <SfTextBox Enabled="isAdmin" Placeholder="Requester Email"
                FloatLabelType="@FloatLabelType.Always"
                @bind-Value="@SelectedTicket.TicketRequesterEmail">
     </SfTextBox>
 </div>
+<br />
 @if (SelectedTicket.HelpDeskTicketDetails != null)
 {
     @if (SelectedTicket.HelpDeskTicketDetails.Count() > 0)
@@ -69,13 +70,16 @@
             </tbody>
         </table>
     }
+    <br />
     <SfTextBox Placeholder="NewHelp Desk Ticket Detail"
                @bind-Value="@NewHelpDeskTicketDetail">
     </SfTextBox>
+    <br />
     <SfButton CssClass="e-small e-success"
               @onclick="AddHelpDeskTicketDetail">
         Add
     </SfButton>
+    <br />
 }
 <br />
 @code {
