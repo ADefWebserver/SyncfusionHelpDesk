@@ -12,12 +12,7 @@
 @inject EmailSender _EmailSender
 @inject NavigationManager NavigationManager
 
-@if (CurrentUser != "")
-{
-    <EditUserRole OnRoleChanged="HandleRoleChange" />
-    <br />
-    <p>You are: <b>@CurrentUser</b></p>
-}
+<EditUserRole OnRoleChanged="HandleRoleChange" />
 
 <SfToast ID="toast_default"
          @ref="ToastObj"
@@ -71,7 +66,7 @@
 
 @code {
 #nullable disable
-    private string CurrentUser = "";
+    ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
     string ADMINISTRATION_ROLE = "Administrators";
 
     SfToast ToastObj;
@@ -83,15 +78,8 @@
     protected override async Task OnInitializedAsync()
     {
         // Get the current user
-        var authState =
-        await AuthenticationStateProvider.GetAuthenticationStateAsync();
-
-        // If the user is authenticated set the current user
-        if (authState.User.Identity is not null && authState.User.Identity.IsAuthenticated)
-        {
-            // Set the current user
-            CurrentUser = authState.User.Identity.Name;
-        }
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        CurrentUser = authState.User;
     }
 
     private void HandleRoleChange(bool isAdmin)

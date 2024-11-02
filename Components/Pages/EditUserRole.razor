@@ -3,17 +3,24 @@
 @inject RoleManager<IdentityRole> RoleManager
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 
 <div class="button-container">
-    <button @onclick="ToggleRole" class="e-btn e-normal e-primary">@buttonText</button>
+    <SfButton OnClick="@ToggleRole"
+              CssClass="e-secondary" Content="@buttonText"></SfButton>&nbsp;
+    @if (isAdmin)
+    {
+        <SfButton OnClick="@(() => NavigationManager.NavigateTo("/administration"))"
+                  CssClass="e-primary" Content="Administration"></SfButton>
+    }
 </div>
-
+<br />
 @code {
 #nullable disable
     [Parameter]
     public EventCallback<bool> OnRoleChanged { get; set; } // Expose event to parent
 
-    string ADMINISTRATION_ROLE = "Administrators";
+    private string ADMINISTRATION_ROLE = "Administrators";
     private string buttonText = "Loading...";
     private ApplicationUser currentUser;
     private bool isAdmin;

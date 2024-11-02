@@ -46,6 +46,16 @@ namespace SyncfusionHelpDesk
             // Syncfusion Support
             builder.Services.AddSyncfusionBlazor();
 
+            // Get SYNCFUSION_APIKEY from appsettings.json
+            var SyncfusionApiKey = builder.Configuration["SYNCFUSION_APIKEY"];
+
+            if (SyncfusionApiKey != "{{ Enter your Syncfusion License from Syncfusion.com }}")
+            {
+                // Register Syncfusion license
+                Syncfusion.Licensing.SyncfusionLicenseProvider
+                    .RegisterLicense(SyncfusionApiKey);
+            }
+
             // To access HelpDesk tables
             builder.Services.AddDbContextFactory<SyncfusionHelpDeskContext>(options =>
                 options.UseSqlServer(connectionString));

@@ -1,38 +1,45 @@
-﻿@* @using System.Security.Claims;
-@using SyncfusionHelpDesk.Data;
-@using Syncfusion.Blazor.DropDowns
-@inherits OwningComponentBase<SyncfusionHelpDeskService>
+﻿@using System.Security.Claims;
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using SyncfusionHelpDesk.Data
+@using SyncfusionHelpDesk.Models
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
+@inject SyncfusionHelpDeskService SyncfusionHelpDeskService
+
 <div>
-    <SfDropDownList TItem="HelpDeskStatus" Enabled="!isReadOnly"
-                     TValue="string" PopupHeight="230px" Index=0
-                     Placeholder="Ticket Status"
-                     DataSource="@HelpDeskStatus.Statuses"
-                     FloatLabelType="@FloatLabelType.Always"
-                     @bind-Value="@SelectedTicket.TicketStatus">
+    <SfDropDownList TItem="HelpDeskStatus" Enabled="!isAdmin"
+                    TValue="string" PopupHeight="230px" Index=0
+                    Placeholder="Ticket Status"
+                    DataSource="@HelpDeskStatus.Statuses"
+                    FloatLabelType="@FloatLabelType.Always"
+                    @bind-Value="@SelectedTicket.TicketStatus">
         <DropDownListFieldSettings Text="Text"
                                    Value="ID">
         </DropDownListFieldSettings>
     </SfDropDownList>
 </div>
 <div>
-    <SfDatePicker ID="TicketDate" Enabled="!isReadOnly"
-                   Placeholder="Ticket Date"
-                   FloatLabelType="@FloatLabelType.Always"
-                   @bind-Value="@SelectedTicket.TicketDate"
-                   Max="DateTime.Now"
-                   ShowClearButton="false">
+    <SfDatePicker ID="TicketDate" Enabled="!isAdmin"
+                  Placeholder="Ticket Date"
+                  FloatLabelType="@FloatLabelType.Always"
+                  @bind-Value="@SelectedTicket.TicketDate"
+                  Max="DateTime.Now"
+                  ShowClearButton="false">
     </SfDatePicker>
 </div>
 <div>
-    <SfTextBox Enabled="!isReadOnly" Placeholder="Ticket Description"
-                FloatLabelType="@FloatLabelType.Always"
-                @bind-Value="@SelectedTicket.TicketDescription">
+    <SfTextBox Enabled="!isAdmin" Placeholder="Ticket Description"
+               FloatLabelType="@FloatLabelType.Always"
+               @bind-Value="@SelectedTicket.TicketDescription">
     </SfTextBox>
 </div>
 <div>
-    <SfTextBox Enabled="!isReadOnly" Placeholder="Requester Email"
-                FloatLabelType="@FloatLabelType.Always"
-                @bind-Value="@SelectedTicket.TicketRequesterEmail">
+    <SfTextBox Enabled="!isAdmin" Placeholder="Requester Email"
+               FloatLabelType="@FloatLabelType.Always"
+               @bind-Value="@SelectedTicket.TicketRequesterEmail">
     </SfTextBox>
 </div>
 @if (SelectedTicket.HelpDeskTicketDetails != null)
@@ -48,7 +55,7 @@
             </thead>
             <tbody>
                 @foreach (var TicketDetail in
-                SelectedTicket.HelpDeskTicketDetails)
+               SelectedTicket.HelpDeskTicketDetails)
                 {
                     <tr>
                         <td>
@@ -63,42 +70,43 @@
         </table>
     }
     <SfTextBox Placeholder="NewHelp Desk Ticket Detail"
-                @bind-Value="@NewHelpDeskTicketDetail">
+               @bind-Value="@NewHelpDeskTicketDetail">
     </SfTextBox>
     <SfButton CssClass="e-small e-success"
-               @onclick="AddHelpDeskTicketDetail">
+              @onclick="AddHelpDeskTicketDetail">
         Add
     </SfButton>
 }
 <br />
 @code {
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-
+#nullable disable
     [Parameter]
-    public HelpDeskTickets SelectedTicket { get; set; }
+    public HelpDeskTicket SelectedTicket { get; set; }
 
-    public bool isReadOnly = true;
-    ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
-
-    string NewHelpDeskTicketDetail = "";
+    private string ADMINISTRATION_ROLE = "Administrators";
+    private bool isAdmin = false;
+    private string NewHelpDeskTicketDetail = "";
 
     protected override async Task OnInitializedAsync()
     {
-        // Get the current user
-        CurrentUser = (await authenticationStateTask).User;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-        // If there is a logged in user
-        // they are an Administrator
-        // Enable editing
-        isReadOnly = !CurrentUser.Identity.IsAuthenticated;
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var CurrentUser = await UserManager.FindByNameAsync(user.Identity.Name);
+
+            // If they are an Administrator
+            // Enable editing
+            isAdmin = await UserManager.IsInRoleAsync(CurrentUser, ADMINISTRATION_ROLE);
+        }
     }
 
     private void AddHelpDeskTicketDetail()
     {
         // Create New HelpDeskTicketDetails record
-        HelpDeskTicketDetails NewHelpDeskTicketDetails =
-            new HelpDeskTicketDetails();
+        HelpDeskTicketDetail NewHelpDeskTicketDetails =
+            new HelpDeskTicketDetail();
 
         NewHelpDeskTicketDetails.HelpDeskTicketId =
             SelectedTicket.Id;
@@ -116,4 +124,4 @@
         // Clear the Text Box
         NewHelpDeskTicketDetail = "";
     }
-} *@
+} 

@@ -1,10 +1,15 @@
 ﻿@page "/emailticketedit/{TicketGuid}"
-@* @using Microsoft.Extensions.Configuration
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Configuration
 @using System.Security.Claims;
 @using SyncfusionHelpDesk.Data;
+@using SyncfusionHelpDesk.Models
 @inject EmailSender _EmailSender
 @inject IConfiguration _configuration
-@inherits OwningComponentBase<SyncfusionHelpDeskService>
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
+@inject SyncfusionHelpDeskService SyncfusionHelpDeskService
+
 <div id="target" style="height: 500px;">
     @if (!EditDialogVisibility)
     {
@@ -13,8 +18,8 @@
     }
 </div>
 <SfDialog Target="#target" Width="500px" Height="500px"
-           IsModal="true" ShowCloseIcon="true"
-           Visible="EditDialogVisibility">
+          IsModal="true" ShowCloseIcon="true"
+          Visible="EditDialogVisibility">
     <DialogTemplates>
         <Header> EDIT TICKET # @SelectedTicket.Id</Header>
         <Content>
@@ -32,19 +37,20 @@
     </DialogTemplates>
 </SfDialog>
 @code {
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-
+#nullable disable
     [Parameter] public string TicketGuid { get; set; }
 
     ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
-    private HelpDeskTickets SelectedTicket = new HelpDeskTickets();
+    private HelpDeskTicket SelectedTicket = new HelpDeskTicket();
     private bool EditDialogVisibility = true;
+
+    private string ADMINISTRATION_ROLE = "Administrators";
 
     protected override async Task OnInitializedAsync()
     {
         // Get current user
-        CurrentUser = (await authenticationStateTask).User;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        CurrentUser = authState.User;
     }
 
     protected override async Task
@@ -55,7 +61,7 @@
             // Get the Help Desk Ticket associated with
             // the GUID that was passed to the control
             SelectedTicket =
-                await @Service.GetHelpDeskTicketAsync(TicketGuid);
+                await SyncfusionHelpDeskService.GetHelpDeskTicketAsync(DbFactory, TicketGuid);
 
             StateHasChanged();
         }
@@ -64,7 +70,7 @@
     public async Task SaveTicket()
     {
         // Save the Help Desk Ticket
-        var result = await @Service.UpdateTicketAsync(SelectedTicket);
+        var result = await SyncfusionHelpDeskService.UpdateTicketAsync(DbFactory, SelectedTicket);
 
         // Close the Dialog
         EditDialogVisibility = false;
@@ -72,7 +78,7 @@
         // Send Emails
         if (CurrentUser.Identity.IsAuthenticated)
         {
-            if (CurrentUser.IsInRole("Administrators"))
+            if (CurrentUser.IsInRole(ADMINISTRATION_ROLE))
             {
                 // User an Administrator
                 // Send email to Requester
@@ -96,4 +102,4 @@
         SelectedTicket.TicketGuid
         );
     }
-} *@
+} 
