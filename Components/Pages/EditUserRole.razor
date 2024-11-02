@@ -5,10 +5,13 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
-<div class="button-container">
-    <SfButton OnClick="@ToggleRole"
-              CssClass="e-secondary" Content="@buttonText"></SfButton>&nbsp;
-</div>
+@if (isLoggedIn)
+{
+    <div class="button-container">
+        <SfButton OnClick="@ToggleRole"
+        CssClass="e-secondary" Content="@buttonText"></SfButton>&nbsp;
+    </div>
+}
 <br />
 @code {
 #nullable disable
@@ -19,6 +22,7 @@
     private string buttonText = "Loading...";
     private ApplicationUser currentUser;
     private bool isAdmin;
+    private bool isLoggedIn;
 
     protected override async Task OnInitializedAsync()
     {
@@ -30,15 +34,13 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        if (user.Identity?.IsAuthenticated == true)
+        isLoggedIn = user.Identity?.IsAuthenticated == true;
+
+        if (isLoggedIn)
         {
             currentUser = await UserManager.FindByNameAsync(user.Identity.Name);
             isAdmin = await UserManager.IsInRoleAsync(currentUser, ADMINISTRATION_ROLE);
             UpdateButtonText();
-        }
-        else
-        {
-            buttonText = "Not Logged In";
         }
     }
 
