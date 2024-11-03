@@ -9,7 +9,11 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
 @inject SyncfusionHelpDeskService SyncfusionHelpDeskService
-
+<style>
+    .custom-dialog .e-dialog {
+        max-height: 90vh !important; /* Customize the max height */
+    }
+</style>
 <div id="target" style="height: 500px;">
     @if (!EditDialogVisibility)
     {
@@ -17,7 +21,9 @@
         <h4>Thank You!</h4>
     }
 </div>
-<SfDialog Target="#target" Width="500px" Height="500px"
+<SfDialog Target="#target"
+          CssClass="custom-dialog"
+          Height="500px"
           IsModal="true" ShowCloseIcon="true"
           Visible="EditDialogVisibility">
     <DialogTemplates>
