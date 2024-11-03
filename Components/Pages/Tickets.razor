@@ -10,6 +10,11 @@
 @inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
 @inject SyncfusionHelpDeskService SyncfusionHelpDeskService
 @inject EmailSender _EmailSender
+<style>
+    .custom-dialog .e-dialog {
+        max-height: 90vh !important; /* Customize the max height */
+    }
+</style>
 <AuthorizeView>
     <Authorized>
         <h1>@PageTitle</h1>
@@ -82,8 +87,8 @@
         </SfDialog>
 
         <SfDialog Target="#target"
+                  CssClass="custom-dialog"
                   Width="500px"
-                  Height="500px"
                   IsModal="true"
                   ShowCloseIcon="true"
                   @bind-Visible="EditDialogVisibility">

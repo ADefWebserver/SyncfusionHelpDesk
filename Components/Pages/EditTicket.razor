@@ -48,26 +48,22 @@
 
 <br />
 
-@if (@SelectedTicket.HelpDeskTicketDetails.Any())
-{
-    <h3>Details</h3>
-    <SfGrid DataSource="@SelectedTicket.HelpDeskTicketDetails">
-        <GridColumns>
-            <GridColumn Field="TicketDetailDate"
-                        HeaderText="Date"
-                        Format="MM/dd/yyyy"
-                        TextAlign="TextAlign.Left"
-                        Width="150">
-            </GridColumn>
-            <GridColumn Field="TicketDescription"
-                        HeaderText="Description"
-                        TextAlign="TextAlign.Left"
-                        Width="300">
-            </GridColumn>
-        </GridColumns>
-    </SfGrid>
-    <br />
-}
+<SfGrid @ref="GridRef" DataSource="@SelectedTicket.HelpDeskTicketDetails">
+    <GridColumns>
+        <GridColumn Field="TicketDetailDate"
+                    HeaderText="Date"
+                    Format="MM/dd/yyyy"
+                    TextAlign="TextAlign.Left"
+                    Width="150">
+        </GridColumn>
+        <GridColumn Field="TicketDescription"
+                    HeaderText="Description"
+                    TextAlign="TextAlign.Left"
+                    Width="300">
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+<br />
 
 <SfTextBox Placeholder="New Help Desk Ticket Detail"
            @bind-Value="@NewHelpDeskTicketDetail">
@@ -88,6 +84,8 @@
 #nullable disable
     [Parameter]
     public HelpDeskTicket SelectedTicket { get; set; }
+
+    private SfGrid<HelpDeskTicketDetail> GridRef;
 
     private string ADMINISTRATION_ROLE = "Administrators";
     private bool isAdmin = false;
@@ -129,5 +127,8 @@
 
         // Clear the Text Box
         NewHelpDeskTicketDetail = "";
+
+        // Update the Grid
+        GridRef.Refresh();
     }
 } 
