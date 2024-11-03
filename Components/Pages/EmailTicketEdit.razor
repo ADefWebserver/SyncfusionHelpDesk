@@ -18,13 +18,14 @@
     @if (!EditDialogVisibility)
     {
         <h2>Your response has been saved</h2>
-        <h4>Thank You!</h4>
+        <h2>Thank You!</h2>
     }
 </div>
 <SfDialog Target="#target"
           CssClass="custom-dialog"
-          Height="500px"
-          IsModal="true" ShowCloseIcon="true"
+          Width="500px"
+          IsModal="true"
+          ShowCloseIcon="true"
           Visible="EditDialogVisibility">
     <DialogTemplates>
         <Header> EDIT TICKET # @SelectedTicket.Id</Header>
@@ -33,11 +34,7 @@
         </Content>
         <FooterTemplate>
             <div class="button-container">
-                <button type="submit"
-                        class="e-btn e-normal e-primary"
-                        @onclick="SaveTicket">
-                    Save
-                </button>
+                <SfButton CssClass="e-primary" OnClick="SaveTicket">Save</SfButton>
             </div>
         </FooterTemplate>
     </DialogTemplates>
