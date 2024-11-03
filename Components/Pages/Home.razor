@@ -59,7 +59,7 @@
     <br />
     <div class="e-footer-content">
         <div class="button-container">
-            <button type="submit" class="e-btn e-normal e-primary">Save</button>
+            <SfButton CssClass="e-normal e-primary" IsPrimary="true" Type="Submit">Save</SfButton>
         </div>
     </div>
 </EditForm>
@@ -71,8 +71,8 @@
     SfToast ToastObj;
     private string ToastContent { get; set; } = "";
 
-    HelpDeskTicket objHelpDeskTicket =
-        new HelpDeskTicket() { TicketDate = DateTime.Now };
+    HelpDeskTicketDTO objHelpDeskTicket =
+        new HelpDeskTicketDTO() { TicketDate = DateTime.Now };
 
     protected override async Task OnInitializedAsync()
     {
@@ -115,7 +115,7 @@
                 SyncfusionHelpDeskService.CreateTicketAsync(DbFactory, NewHelpDeskTickets);
 
             // Clear the form
-            objHelpDeskTicket = new HelpDeskTicket();
+            objHelpDeskTicket = new HelpDeskTicketDTO();
 
             // Show the Toast
             ToastContent = "Saved!";

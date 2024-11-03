@@ -31,13 +31,13 @@
                             <GridCommandColumns>
                                 <GridCommandColumn Type=CommandButtonType.Edit
                                                    ButtonOption="@(new CommandButtonOptions()
-                                                               { Content = "Edit" })">
+                                                               { Content = "Edit", CssClass = "e-primary" })">
                                 </GridCommandColumn>
                                 @if (isAdmin)
                                 {
                                     <GridCommandColumn Type=CommandButtonType.Delete
                                                        ButtonOption="@(new CommandButtonOptions()
-                                                               { Content = "Delete" })">
+                                                               { Content = "Delete", CssClass = "e-danger" })">
                                     </GridCommandColumn>
                                 }
                             </GridCommandColumns>
@@ -61,6 +61,7 @@
                 </SfGrid>
             </div>
         </div>
+
         <SfDialog Target="#target"
                   Width="100px"
                   Height="130px"
@@ -71,20 +72,13 @@
                 <Header> DELETE RECORD ? </Header>
                 <Content>
                     <div class="button-container">
-                        <button type="submit"
-                                class="e-btn e-normal e-primary"
-                                @onclick="ConfirmDeleteYes">
-                            Yes
-                        </button>
-                        <button type="submit"
-                                class="e-btn e-normal"
-                                @onclick="ConfirmDeleteNo">
-                            No
-                        </button>
+                        <SfButton CssClass="e-primary" OnClick="ConfirmDeleteYes">Yes</SfButton>
+                        <SfButton OnClick="ConfirmDeleteNo">No</SfButton>
                     </div>
                 </Content>
             </DialogTemplates>
         </SfDialog>
+
         <SfDialog Target="#target"
                   Width="500px"
                   Height="500px"
@@ -92,22 +86,19 @@
                   ShowCloseIcon="true"
                   @bind-Visible="EditDialogVisibility">
             <DialogTemplates>
-                <Header> EDIT TICKET # @SelectedTicket.Id</Header>
+                <Header> EDIT TICKET # @SelectedTicket.Id </Header>
                 <Content>
                     <EditTicket SelectedTicket="@SelectedTicket" />
                 </Content>
                 <FooterTemplate>
                     <div class="button-container">
-                        <button type="submit"
-                                class="e-btn e-normal e-primary"
-                                @onclick="SaveTicket">
-                            Save
-                        </button>
+                        <SfButton CssClass="e-primary" OnClick="SaveTicket">Save</SfButton>
                     </div>
                 </FooterTemplate>
             </DialogTemplates>
         </SfDialog>
     </Authorized>
+
     <NotAuthorized>
         <p>You are not authorized to view this page.</p>
     </NotAuthorized>
