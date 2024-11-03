@@ -106,6 +106,9 @@
             NewHelpDeskTickets.TicketStatus =
                 objHelpDeskTicket.TicketStatus;
 
+            NewHelpDeskTickets.HelpDeskTicketDetails =
+                new List<HelpDeskTicketDetail>();
+
             // Create a new GUID for this Help Desk Ticket
             NewHelpDeskTickets.TicketGuid =
                 System.Guid.NewGuid().ToString();

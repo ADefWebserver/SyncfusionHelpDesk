@@ -48,43 +48,40 @@
 
 <br />
 
-@if (SelectedTicket.HelpDeskTicketDetails != null)
+@if (@SelectedTicket.HelpDeskTicketDetails.Any())
 {
-    @if (SelectedTicket.HelpDeskTicketDetails.Count() > 0)
-    {
-        <SfGrid DataSource="@SelectedTicket.HelpDeskTicketDetails">
-            <GridColumns>
-                <GridColumn Field="TicketDetailDate"
-                            HeaderText="Date"
-                            Format="MM/dd/yyyy"
-                            TextAlign="TextAlign.Left"
-                            Width="150">
-                </GridColumn>
-                <GridColumn Field="TicketDescription"
-                            HeaderText="Description"
-                            TextAlign="TextAlign.Left"
-                            Width="300">
-                </GridColumn>
-            </GridColumns>
-        </SfGrid>
-    }
-
-    <br />
-
-    <SfTextBox Placeholder="New Help Desk Ticket Detail"
-               @bind-Value="@NewHelpDeskTicketDetail">
-    </SfTextBox>
-
-    <br />
-
-    <SfButton CssClass="e-small e-success"
-              @onclick="AddHelpDeskTicketDetail">
-        Add
-    </SfButton>
-
+    <h3>Details</h3>
+    <SfGrid DataSource="@SelectedTicket.HelpDeskTicketDetails">
+        <GridColumns>
+            <GridColumn Field="TicketDetailDate"
+                        HeaderText="Date"
+                        Format="MM/dd/yyyy"
+                        TextAlign="TextAlign.Left"
+                        Width="150">
+            </GridColumn>
+            <GridColumn Field="TicketDescription"
+                        HeaderText="Description"
+                        TextAlign="TextAlign.Left"
+                        Width="300">
+            </GridColumn>
+        </GridColumns>
+    </SfGrid>
     <br />
 }
 
+<SfTextBox Placeholder="New Help Desk Ticket Detail"
+           @bind-Value="@NewHelpDeskTicketDetail">
+</SfTextBox>
+
+<br />
+<br />
+
+<SfButton CssClass="e-small e-success"
+          @onclick="AddHelpDeskTicketDetail">
+    Add Detail
+</SfButton>
+
+<br />
 <br />
 
 @code {

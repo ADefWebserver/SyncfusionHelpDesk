@@ -40,6 +40,7 @@
         {
             currentUser = await UserManager.FindByNameAsync(user.Identity.Name);
             isAdmin = await UserManager.IsInRoleAsync(currentUser, ADMINISTRATION_ROLE);
+
             UpdateButtonText();
         }
     }
@@ -65,7 +66,9 @@
             }
 
             UpdateButtonText();
-            await OnRoleChanged.InvokeAsync(); // Raise event to notify parent
+            
+            // Raise event to notify parent
+            await OnRoleChanged.InvokeAsync(); 
         }
     }
 }

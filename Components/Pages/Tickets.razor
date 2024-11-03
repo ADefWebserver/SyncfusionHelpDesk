@@ -30,14 +30,16 @@
                         <GridColumn HeaderText="" TextAlign="TextAlign.Left" Width="150">
                             <GridCommandColumns>
                                 <GridCommandColumn Type=CommandButtonType.Edit
-                                                   ButtonOption="@(new CommandButtonOptions()
-                                                               { Content = "Edit", CssClass = "e-primary" })">
+                                                   ButtonOption="@(new CommandButtonOptions() {
+                                                                    Content = "Edit",
+                                                                    CssClass = "e-primary" })">
                                 </GridCommandColumn>
                                 @if (isAdmin)
                                 {
                                     <GridCommandColumn Type=CommandButtonType.Delete
-                                                       ButtonOption="@(new CommandButtonOptions()
-                                                               { Content = "Delete", CssClass = "e-danger" })">
+                                                       ButtonOption="@(new CommandButtonOptions() {
+                                                                        Content = "Delete",
+                                                                        CssClass = "e-danger"})">
                                     </GridCommandColumn>
                                 }
                             </GridCommandColumns>
@@ -64,7 +66,7 @@
 
         <SfDialog Target="#target"
                   Width="100px"
-                  Height="130px"
+                  Height="230px"
                   IsModal="true"
                   ShowCloseIcon="false"
                   @bind-Visible="DeleteRecordConfirmVisibility">
@@ -121,22 +123,28 @@
     protected override async Task OnInitializedAsync()
     {
         // Get the current user
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await AuthenticationStateProvider
+        .GetAuthenticationStateAsync();
+
         CurrentUser = authState.User;
 
         // Check if the current user is an Administrator
         if (CurrentUser.Identity?.IsAuthenticated == true)
         {
-            var CurrentApplicationUser = await UserManager.FindByNameAsync(CurrentUser.Identity.Name);
+            var CurrentApplicationUser =
+            await UserManager.FindByNameAsync(CurrentUser.Identity.Name);
 
             // See if the current user is an Administrator
-            isAdmin = await UserManager.IsInRoleAsync(CurrentApplicationUser, ADMINISTRATION_ROLE);
+            isAdmin =
+            await UserManager.IsInRoleAsync(
+                CurrentApplicationUser, ADMINISTRATION_ROLE);
         }
 
         // GetHelpDeskTickets returns IQueryable that the
         // SfGrid will use to only pull records for the
         // page that is currently selected
-        colHelpDeskTickets = SyncfusionHelpDeskService.GetHelpDeskTickets(DbFactory, isAdmin, CurrentUser.Identity.Name);
+        colHelpDeskTickets = SyncfusionHelpDeskService
+        .GetHelpDeskTickets(DbFactory, isAdmin, CurrentUser.Identity.Name);
 
         // Set PageTitle
         PageTitle = isAdmin ? "Administration" : "My Help Desk Tickets";
@@ -147,7 +155,8 @@
     {
         // Get the selected Help Desk Ticket
         SelectedTicket =
-            await SyncfusionHelpDeskService.GetHelpDeskTicketAsync(DbFactory, args.RowData.TicketGuid);
+            await SyncfusionHelpDeskService.GetHelpDeskTicketAsync(
+                DbFactory, args.RowData.TicketGuid);
 
         if (args.CommandColumn.ButtonOption.Content == "Edit")
         {
@@ -168,7 +177,8 @@
     {
         // Update the selected Help Desk Ticket
         var result =
-            await SyncfusionHelpDeskService.UpdateTicketAsync(DbFactory, SelectedTicket);
+            await SyncfusionHelpDeskService.UpdateTicketAsync(
+                DbFactory, SelectedTicket);
 
         // Close the Edit dialog
         this.EditDialogVisibility = false;
@@ -193,8 +203,7 @@
         // Delete the record
         var result =
             await SyncfusionHelpDeskService.DeleteHelpDeskTicketsAsync(
-                DbFactory,
-                SelectedTicket);
+                DbFactory, SelectedTicket);
 
         // Close the dialog
         this.DeleteRecordConfirmVisibility = false;

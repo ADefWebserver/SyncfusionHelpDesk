@@ -14,7 +14,10 @@ namespace SyncfusionHelpDesk.Data
         public SyncfusionHelpDeskService() { }
 
         public IQueryable<HelpDeskTicket>
-            GetHelpDeskTickets(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory, bool IsAdmin, string paramEmail)
+            GetHelpDeskTickets(
+            IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory, 
+            bool IsAdmin, 
+            string paramEmail)
         {
             // Return all HelpDesk Tickets as IQueryable
             // SfGrid will use this to only pull records 
@@ -40,7 +43,9 @@ namespace SyncfusionHelpDesk.Data
         }
 
         public async Task<HelpDeskTicket>
-            GetHelpDeskTicketAsync(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory, string HelpDeskTicketGuid)
+            GetHelpDeskTicketAsync(
+            IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory, 
+            string HelpDeskTicketGuid)
         {
             // Get the existing record
             var _context = dbContextFactory.CreateDbContext();
@@ -55,7 +60,9 @@ namespace SyncfusionHelpDesk.Data
         }
 
         public Task<HelpDeskTicket>
-            CreateTicketAsync(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory, HelpDeskTicket newHelpDeskTickets)
+            CreateTicketAsync(
+            IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory,
+            HelpDeskTicket newHelpDeskTickets)
         {
             // Add a new Help Desk Ticket
             var _context = dbContextFactory.CreateDbContext();
@@ -67,7 +74,8 @@ namespace SyncfusionHelpDesk.Data
         }
 
         public Task<bool>
-            UpdateTicketAsync(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory,
+            UpdateTicketAsync(
+            IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory,
             HelpDeskTicket UpdatedHelpDeskTickets)
         {
             // Get the existing record
@@ -130,7 +138,8 @@ namespace SyncfusionHelpDesk.Data
         }
 
         public Task<bool>
-            DeleteHelpDeskTicketsAsync(IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory,
+            DeleteHelpDeskTicketsAsync(
+            IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory,
             HelpDeskTicket DeleteHelpDeskTickets)
         {
             // Get the existing record
