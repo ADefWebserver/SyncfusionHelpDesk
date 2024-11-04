@@ -22,7 +22,7 @@
 </SfToast>
 <h3>New Help Desk Ticket</h3>
 <br />
-<EditForm ID="new-doctor-form" Model="@objHelpDeskTicket"
+<EditForm ID="new-ticket-form" Model="@objHelpDeskTicket"
           OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div>
@@ -60,6 +60,8 @@
     <div class="e-footer-content">
         <div class="button-container">
             <SfButton CssClass="e-normal e-primary" IsPrimary="true" Type="Submit">Save</SfButton>
+            <SfSmartPasteButton IsPrimary="true" Content="Smart Paste" IconCss="e-icons e-paste">
+            </SfSmartPasteButton>
         </div>
     </div>
 </EditForm>

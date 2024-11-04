@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Syncfusion.Blazor;
+using Syncfusion.Blazor.SmartComponents;
 using SyncfusionHelpDesk.Components;
 using SyncfusionHelpDesk.Components.Account;
 using SyncfusionHelpDesk.Data;
@@ -49,11 +50,23 @@ namespace SyncfusionHelpDesk
             // Get SYNCFUSION_APIKEY from appsettings.json
             var SyncfusionApiKey = builder.Configuration["SYNCFUSION_APIKEY"];
 
-            if (SyncfusionApiKey != "{{ Enter your Syncfusion License from Syncfusion.com }}")
+            if (SyncfusionApiKey != "")
             {
                 // Register Syncfusion license
                 Syncfusion.Licensing.SyncfusionLicenseProvider
                     .RegisterLicense(SyncfusionApiKey);
+            }
+
+            // Add Syncfusion AI components
+            var apiKey = builder.Configuration["OpenAI:apiKey"];
+            var deploymentName = builder.Configuration["OpenAI:deploymentName"];
+            var endpoint = builder.Configuration["OpenAI:endpoint"];
+
+            if(apiKey != "")
+            {
+                builder.Services.AddSyncfusionSmartComponents()
+                    .ConfigureCredentials(new AIServiceCredentials(apiKey, deploymentName, endpoint))
+                    .InjectOpenAIInference();
             }
 
             // To access HelpDesk tables
