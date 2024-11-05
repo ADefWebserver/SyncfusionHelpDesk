@@ -92,13 +92,13 @@ namespace SyncfusionHelpDesk
         #region public string GetHelpDeskTicketUrl(string TicketGuid)
         public string GetHelpDeskTicketUrl(string TicketGuid)
         {
-            var request = httpContextAccessor.HttpContext.Request;
+            var request = httpContextAccessor.HttpContext?.Request;
 
-            var host = request.Host.ToUriComponent();
+            var host = request?.Host.ToUriComponent();
 
-            var pathBase = request.PathBase.ToUriComponent();
+            var pathBase = request?.PathBase.ToUriComponent();
 
-            return $@"{request.Scheme}://{host}{pathBase}/emailticketedit/{TicketGuid}";
+            return $@"{request?.Scheme}://{host}{pathBase}/emailticketedit/{TicketGuid}";
         }
         #endregion
     }

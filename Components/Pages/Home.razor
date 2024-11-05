@@ -1,14 +1,9 @@
 ﻿@page "/"
-@using System.Security.Claims;
-@using Microsoft.AspNetCore.Identity;
-@using Microsoft.AspNetCore.Components.Authorization;
 @using Microsoft.EntityFrameworkCore
 @using SyncfusionHelpDesk.Data;
 @using SyncfusionHelpDesk.Models
 @inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
 @inject SyncfusionHelpDeskService SyncfusionHelpDeskService
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject RoleManager<IdentityRole> _RoleManager
 @inject EmailSender _EmailSender
 @inject NavigationManager NavigationManager
 
@@ -68,8 +63,6 @@
 
 @code {
 #nullable disable
-    ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
-
     SfToast ToastObj;
     private string ToastContent { get; set; } = "";
 
@@ -79,13 +72,6 @@
                 TicketDate = DateTime.Now,
                 TicketStatus = "New"
             };
-
-    protected override async Task OnInitializedAsync()
-    {
-        // Get the current user
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        CurrentUser = authState.User;
-    }
 
     private void HandleRoleChange()
     {
