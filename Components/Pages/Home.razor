@@ -120,7 +120,7 @@
                 SyncfusionHelpDeskService.CreateTicketAsync(DbFactory, NewHelpDeskTickets);
 
             // Clear the form
-            objHelpDeskTicket = new HelpDeskTicketDTO();
+            objHelpDeskTicket = new HelpDeskTicketDTO() { TicketDate = DateTime.Now };
 
             // Show the Toast
             ToastContent = "Saved!";
