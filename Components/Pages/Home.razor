@@ -26,7 +26,7 @@
           OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div>
-        <SfDropDownList TItem="HelpDeskStatus" TValue="string"
+        <SfDropDownList TItem="HelpDeskStatus" TValue="string" 
                         PopupHeight="230px" Index=0
                         Placeholder="Ticket Status"
                         DataSource="@HelpDeskStatus.Statuses"
@@ -74,7 +74,11 @@
     private string ToastContent { get; set; } = "";
 
     HelpDeskTicketDTO objHelpDeskTicket =
-        new HelpDeskTicketDTO() { TicketDate = DateTime.Now };
+        new HelpDeskTicketDTO()
+            {
+                TicketDate = DateTime.Now,
+                TicketStatus = "New"
+            };
 
     protected override async Task OnInitializedAsync()
     {
