@@ -21,14 +21,12 @@
           OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div>
-        <SfDropDownList TItem="HelpDeskStatus" TValue="string" 
-                        PopupHeight="230px" Index=0
+        <SfDropDownList TItem="HelpDeskStatus" TValue="string" PopupHeight="230px"
                         Placeholder="Ticket Status"
-                        DataSource="@HelpDeskStatus.Statuses"
-                        FloatLabelType="@FloatLabelType.Always"
-                        @bind-Value="@objHelpDeskTicket.TicketStatus">
-            <DropDownListFieldSettings Text="Text"
-                                       Value="ID"></DropDownListFieldSettings>
+                        @bind-Value="@objHelpDeskTicket.TicketStatus"
+                        DataSource="@HelpDeskStatusData.Statuses">
+            <DropDownListEvents TItem="HelpDeskStatus" TValue="string" />
+            <DropDownListFieldSettings Text="Text" Value="ID" />
         </SfDropDownList>
     </div>
     <div>
@@ -67,11 +65,11 @@
     private string ToastContent { get; set; } = "";
 
     HelpDeskTicketDTO objHelpDeskTicket =
-        new HelpDeskTicketDTO()
-            {
-                TicketDate = DateTime.Now,
-                TicketStatus = "New"
-            };
+            new HelpDeskTicketDTO()
+                {
+                    TicketDate = DateTime.Now,
+                    TicketStatus = "New"
+                };
 
     private void HandleRoleChange()
     {

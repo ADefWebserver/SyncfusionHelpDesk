@@ -10,15 +10,14 @@
 @inject SyncfusionHelpDeskService SyncfusionHelpDeskService
 
 <div>
-    <SfDropDownList TItem="HelpDeskStatus" Enabled="isAdmin"
-                    TValue="string" PopupHeight="230px" Index=0
-                    Placeholder="Ticket Status"
-                    DataSource="@HelpDeskStatus.Statuses"
+    <SfDropDownList Enabled="isAdmin" TItem="HelpDeskStatus" TValue="string"
+                    PopupHeight="230px" Index=0
                     FloatLabelType="@FloatLabelType.Always"
-                    @bind-Value="@SelectedTicket.TicketStatus">
-        <DropDownListFieldSettings Text="Text"
-                                   Value="ID">
-        </DropDownListFieldSettings>
+                    Placeholder="Ticket Status"
+                    @bind-Value="@SelectedTicket.TicketStatus"
+                    DataSource="@HelpDeskStatusData.Statuses">
+        <DropDownListEvents TItem="HelpDeskStatus" TValue="string" />
+        <DropDownListFieldSettings Text="Text" Value="ID" />
     </SfDropDownList>
 </div>
 
