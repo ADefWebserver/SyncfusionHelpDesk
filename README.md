@@ -1,6 +1,6 @@
 # SyncfusionHelpDesk
 
-![Screenshot](SyncfusionHelpDesk.png)
+![screenshot](https://github.com/user-attachments/assets/1af12cac-da3a-4f9d-8298-dfe0a2d9d9ea)
 
 ## Covered in the Book:
 [Blazor Succinctly](https://www.syncfusion.com/ebooks/blazor-succinctly)
