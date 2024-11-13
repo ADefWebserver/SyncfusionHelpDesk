@@ -14,7 +14,7 @@
 
 1) Get an **API key** from [Syncfusion.com](https://support.syncfusion.com/kb/article/9795/how-to-get-community-license-and-install-it)
 2) Open **appsettings.json**: 
-- For **SYNCFUSION_APIKEY** and enter your Syncfusion API key
+- For **SYNCFUSION_APIKEY** enter your Syncfusion API key
 
 ### To Enable Emails
 
