@@ -1,0 +1,228 @@
+﻿@page "/tickets"
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using SyncfusionHelpDesk.Data;
+@using SyncfusionHelpDesk.Models
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<ApplicationUser> UserManager
+@inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
+@inject SyncfusionHelpDeskService SyncfusionHelpDeskService
+@inject EmailSender _EmailSender
+<style>
+    .custom-dialog .e-dialog {
+        max-height: 90vh !important; /* Customize the max height */
+    }
+</style>
+<AuthorizeView>
+    <Authorized>
+        <h1>@PageTitle</h1>
+        <div>
+            <div id="target" style="height: 500px;">
+                <SfGrid ID="Grid"
+                        @ref="gridObj"
+                        DataSource="@colHelpDeskTickets"
+                        AllowPaging="true"
+                        AllowSorting="true"
+                        AllowResizing="true"
+                        AllowReordering="true">
+                    <GridPageSettings PageSize="5"></GridPageSettings>
+                    <GridEvents CommandClicked="OnCommandClicked"
+                                TValue="HelpDeskTicket">
+                    </GridEvents>
+                    <GridColumns>
+                        <GridColumn HeaderText="" TextAlign="TextAlign.Left" Width="150">
+                            <GridCommandColumns>
+                                <GridCommandColumn Type=CommandButtonType.Edit
+                                                   ButtonOption="@(new CommandButtonOptions() {
+                                                                    Content = "Edit",
+                                                                    CssClass = "e-primary" })">
+                                </GridCommandColumn>
+                                @if (isAdmin)
+                                {
+                                    <GridCommandColumn Type=CommandButtonType.Delete
+                                                       ButtonOption="@(new CommandButtonOptions() {
+                                                                        Content = "Delete",
+                                                                        CssClass = "e-danger"})">
+                                    </GridCommandColumn>
+                                }
+                            </GridCommandColumns>
+                        </GridColumn>
+                        <GridColumn IsPrimaryKey="true" Field=@nameof(HelpDeskTicket.Id)
+                                    HeaderText="ID #" TextAlign="@TextAlign.Left" Width="70">
+                        </GridColumn>
+                        <GridColumn Field=@nameof(HelpDeskTicket.TicketStatus)
+                                    HeaderText="Status" TextAlign="@TextAlign.Left" Width="80">
+                        </GridColumn>
+                        <GridColumn Field=@nameof(HelpDeskTicket.TicketDate)
+                                    HeaderText="Date" TextAlign="@TextAlign.Left" Width="80">
+                        </GridColumn>
+                        <GridColumn Field=@nameof(HelpDeskTicket.TicketDescription)
+                                    HeaderText="Description" TextAlign="@TextAlign.Left" Width="150">
+                        </GridColumn>
+                        <GridColumn Field=@nameof(HelpDeskTicket.TicketRequesterEmail)
+                                    HeaderText="Requester" TextAlign="@TextAlign.Left" Width="150">
+                        </GridColumn>
+                    </GridColumns>
+                </SfGrid>
+            </div>
+        </div>
+
+        <SfDialog Target="#target"
+                  Width="100px"
+                  Height="230px"
+                  IsModal="true"
+                  ShowCloseIcon="false"
+                  @bind-Visible="DeleteRecordConfirmVisibility">
+            <DialogTemplates>
+                <Header> DELETE RECORD ? </Header>
+                <Content>
+                    <div class="button-container">
+                        <SfButton CssClass="e-primary" OnClick="ConfirmDeleteYes">Yes</SfButton>
+                        <SfButton OnClick="ConfirmDeleteNo">No</SfButton>
+                    </div>
+                </Content>
+            </DialogTemplates>
+        </SfDialog>
+
+        <SfDialog Target="#target"
+                  CssClass="custom-dialog"
+                  Width="500px"
+                  IsModal="true"
+                  ShowCloseIcon="true"
+                  @bind-Visible="EditDialogVisibility">
+            <DialogTemplates>
+                <Header> EDIT TICKET # @SelectedTicket.Id </Header>
+                <Content>
+                    <EditTicket SelectedTicket="@SelectedTicket" />
+                </Content>
+                <FooterTemplate>
+                    <div class="button-container">
+                        <SfButton CssClass="e-primary" OnClick="SaveTicket">Save</SfButton>
+                    </div>
+                </FooterTemplate>
+            </DialogTemplates>
+        </SfDialog>
+    </Authorized>
+
+    <NotAuthorized>
+        <p>You are not authorized to view this page.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+#nullable disable
+    ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
+
+    private string PageTitle = "Administration";
+    private string ADMINISTRATION_ROLE = "Administrators";
+    private bool isAdmin = false;
+
+    SfGrid<HelpDeskTicket> gridObj;
+    public IQueryable<HelpDeskTicket> colHelpDeskTickets { get; set; }
+    private HelpDeskTicket SelectedTicket = new HelpDeskTicket();
+    public bool EditDialogVisibility { get; set; } = false;
+    public bool DeleteRecordConfirmVisibility { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the current user
+        var authState = await AuthenticationStateProvider
+        .GetAuthenticationStateAsync();
+
+        CurrentUser = authState.User;
+
+        // Check if the current user is an Administrator
+        if (CurrentUser.Identity?.IsAuthenticated == true)
+        {
+            var CurrentApplicationUser =
+            await UserManager.FindByNameAsync(CurrentUser.Identity.Name);
+
+            // See if the current user is an Administrator
+            isAdmin =
+            await UserManager.IsInRoleAsync(
+                CurrentApplicationUser, ADMINISTRATION_ROLE);
+        }
+
+        // GetHelpDeskTickets returns IQueryable that the
+        // SfGrid will use to only pull records for the
+        // page that is currently selected
+        colHelpDeskTickets = SyncfusionHelpDeskService
+        .GetHelpDeskTickets(DbFactory, isAdmin, CurrentUser.Identity.Name);
+
+        // Set PageTitle
+        PageTitle = isAdmin ? "Administration" : "My Help Desk Tickets";
+    }
+
+    public async void OnCommandClicked(
+        CommandClickEventArgs<HelpDeskTicket> args)
+    {
+        // Get the selected Help Desk Ticket
+        SelectedTicket =
+            await SyncfusionHelpDeskService.GetHelpDeskTicketAsync(
+                DbFactory, args.RowData.TicketGuid);
+
+        if (args.CommandColumn.ButtonOption.Content == "Edit")
+        {
+            // Open teh Edit dialog
+            this.EditDialogVisibility = true;
+            StateHasChanged();
+        }
+
+        if (args.CommandColumn.ButtonOption.Content == "Delete")
+        {
+            // Open Delete confirmation dialog
+            this.DeleteRecordConfirmVisibility = true;
+            StateHasChanged();
+        }
+    }
+
+    public async Task SaveTicket()
+    {
+        // Update the selected Help Desk Ticket
+        var result =
+            await SyncfusionHelpDeskService.UpdateTicketAsync(
+                DbFactory, SelectedTicket);
+
+        // Close the Edit dialog
+        this.EditDialogVisibility = false;
+
+        // Refresh the SfGrid
+        // so the changes to the selected
+        // Help Desk Ticket are reflected
+        await gridObj.Refresh();
+
+        // Send email to Requester
+        await _EmailSender.SendEmail(
+        "Help Desk Ticket Updated",
+        SelectedTicket.TicketRequesterEmail,
+        SelectedTicket.TicketGuid
+        );
+    }
+
+    public async void ConfirmDeleteYes()
+    {
+        // The user selected Yes to delete the
+        // selected Help Desk Ticket
+        // Delete the record
+        var result =
+            await SyncfusionHelpDeskService.DeleteHelpDeskTicketsAsync(
+                DbFactory, SelectedTicket);
+
+        // Close the dialog
+        this.DeleteRecordConfirmVisibility = false;
+
+        // Refresh the SfGrid
+        // so the deleted record will not show
+        await gridObj.Refresh();
+    }
+
+    public void ConfirmDeleteNo()
+    {
+        // Open the dialog
+        // to give the user a chance
+        // to confirm they want to delete the record
+        this.DeleteRecordConfirmVisibility = false;
+    }
+} 

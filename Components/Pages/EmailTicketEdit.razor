@@ -1,0 +1,108 @@
+﻿@page "/emailticketedit/{TicketGuid}"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Configuration
+@using System.Security.Claims;
+@using SyncfusionHelpDesk.Data;
+@using SyncfusionHelpDesk.Models
+@inject EmailSender _EmailSender
+@inject IConfiguration _configuration
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
+@inject SyncfusionHelpDeskService SyncfusionHelpDeskService
+<style>
+    .custom-dialog .e-dialog {
+        max-height: 90vh !important; /* Customize the max height */
+    }
+</style>
+<div id="target" style="height: 500px;">
+    @if (!EditDialogVisibility)
+    {
+        <h2>Your response has been saved</h2>
+        <h2>Thank You!</h2>
+    }
+</div>
+<SfDialog Target="#target"
+          CssClass="custom-dialog"
+          Width="500px"
+          IsModal="true"
+          ShowCloseIcon="true"
+          Visible="EditDialogVisibility">
+    <DialogTemplates>
+        <Header> EDIT TICKET # @SelectedTicket.Id</Header>
+        <Content>
+            <EditTicket SelectedTicket="@SelectedTicket" />
+        </Content>
+        <FooterTemplate>
+            <div class="button-container">
+                <SfButton CssClass="e-primary" OnClick="SaveTicket">Save</SfButton>
+            </div>
+        </FooterTemplate>
+    </DialogTemplates>
+</SfDialog>
+@code {
+#nullable disable
+    [Parameter] public string TicketGuid { get; set; }
+
+    ClaimsPrincipal CurrentUser = new ClaimsPrincipal();
+    private HelpDeskTicket SelectedTicket = new HelpDeskTicket();
+    private bool EditDialogVisibility = true;
+
+    private string ADMINISTRATION_ROLE = "Administrators";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Get current user
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        CurrentUser = authState.User;
+    }
+
+    protected override async Task
+        OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Get the Help Desk Ticket associated with
+            // the GUID that was passed to the control
+            SelectedTicket =
+                await SyncfusionHelpDeskService.GetHelpDeskTicketAsync(DbFactory, TicketGuid);
+
+            StateHasChanged();
+        }
+    }
+
+    public async Task SaveTicket()
+    {
+        // Save the Help Desk Ticket
+        var result = await SyncfusionHelpDeskService.UpdateTicketAsync(DbFactory, SelectedTicket);
+
+        // Close the Dialog
+        EditDialogVisibility = false;
+
+        // Send Emails
+        if (CurrentUser.Identity.IsAuthenticated)
+        {
+            if (CurrentUser.IsInRole(ADMINISTRATION_ROLE))
+            {
+                // User an Administrator
+                // Send email to Requester
+                await _EmailSender.SendEmail(
+                "Help Desk Ticket Updated",
+                SelectedTicket.TicketRequesterEmail,
+                SelectedTicket.TicketGuid
+                );
+
+                return;
+            }
+        }
+
+        // User is not an Administrator
+        // Send email to Administrator
+        string AdministratorEmail = _configuration["SenderEmail"];
+
+        await _EmailSender.SendEmail(
+        "Help Desk Ticket Updated",
+        AdministratorEmail,
+        SelectedTicket.TicketGuid
+        );
+    }
+} 

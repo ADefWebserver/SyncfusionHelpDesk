@@ -1,30 +1,50 @@
 ﻿{
+   "CodeGenerationMode": 5,
    "ContextClassName": "SyncfusionHelpDeskContext",
    "ContextNamespace": null,
-   "DefaultDacpacSchema": null,
-   "DoNotCombineNamespace": false,
-   "IdReplace": false,
+   "FilterSchemas": false,
    "IncludeConnectionString": false,
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "Data",
+   "OutputPath": "Models",
+   "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "SyncfusionHelpDesk",
-   "SelectedHandlebarsLanguage": 0,
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
    "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
    "Tables": [
       {
-         "HasPrimaryKey": true,
-         "Name": "[dbo].[HelpDeskTicketDetails]"
+         "Name": "[dbo].[HelpDeskTicketDetails]",
+         "ObjectType": 0
       },
       {
-         "HasPrimaryKey": true,
-         "Name": "[dbo].[HelpDeskTickets]"
+         "Name": "[dbo].[HelpDeskTickets]",
+         "ObjectType": 0
       }
    ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
+   "UseDateOnlyTimeOnly": false,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
    "UseFluentApiOnly": true,
    "UseHandleBars": false,
-   "UseInflector": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
    "UseLegacyPluralizer": false,
-   "UseSpatial": false
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false
 }

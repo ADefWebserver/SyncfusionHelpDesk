@@ -1,0 +1,131 @@
+﻿@page "/"
+@using Microsoft.EntityFrameworkCore
+@using SyncfusionHelpDesk.Data;
+@using SyncfusionHelpDesk.Models
+@inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
+@inject SyncfusionHelpDeskService SyncfusionHelpDeskService
+@inject EmailSender _EmailSender
+@inject NavigationManager NavigationManager
+
+<EditUserRole OnRoleChanged="HandleRoleChange" />
+
+<SfToast ID="toast_default"
+         @ref="ToastObj"
+         Title="Help Desk Ticket"
+         Content="@ToastContent" TimeOut="5000">
+    <ToastPosition X="Right"></ToastPosition>
+</SfToast>
+<h3>New Help Desk Ticket</h3>
+<br />
+<EditForm ID="new-ticket-form" Model="@objHelpDeskTicket"
+          OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <div>
+        <SfDropDownList TItem="HelpDeskStatus" TValue="string" PopupHeight="230px"
+                        Placeholder="Ticket Status"
+                        @bind-Value="@objHelpDeskTicket.TicketStatus"
+                        DataSource="@HelpDeskStatusData.Statuses">
+            <DropDownListEvents TItem="HelpDeskStatus" TValue="string" />
+            <DropDownListFieldSettings Text="Text" Value="ID" />
+        </SfDropDownList>
+    </div>
+    <div>
+        <SfDatePicker ID="TicketDate" Placeholder="Ticket Date"
+                      FloatLabelType="@FloatLabelType.Always"
+                      @bind-Value="@objHelpDeskTicket.TicketDate"
+                      Max="DateTime.Now"
+                      ShowClearButton="false"></SfDatePicker>
+        <ValidationMessage For="@(() => objHelpDeskTicket.TicketDate)" />
+    </div>
+    <div>
+        <SfTextBox Placeholder="Ticket Description"
+                   FloatLabelType="@FloatLabelType.Always"
+                   @bind-Value="@objHelpDeskTicket.TicketDescription"></SfTextBox>
+        <ValidationMessage For="@(() => objHelpDeskTicket.TicketDescription)" />
+    </div>
+    <div>
+        <SfTextBox Placeholder="Requester Email"
+                   FloatLabelType="@FloatLabelType.Always"
+                   @bind-Value="@objHelpDeskTicket.TicketRequesterEmail"></SfTextBox>
+        <ValidationMessage For="@(() => objHelpDeskTicket.TicketRequesterEmail)" />
+    </div>
+    <br />
+    <div class="e-footer-content">
+        <div class="button-container">
+            <SfButton CssClass="e-normal e-primary" IsPrimary="true" Type="Submit">Save</SfButton>
+            <SfSmartPasteButton IsPrimary="true" Content="Smart Paste" IconCss="e-icons e-paste">
+            </SfSmartPasteButton>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+#nullable disable
+    SfToast ToastObj;
+    private string ToastContent { get; set; } = "";
+
+    HelpDeskTicketDTO objHelpDeskTicket =
+            new HelpDeskTicketDTO()
+                {
+                    TicketDate = DateTime.Now,
+                    TicketStatus = "New"
+                };
+
+    private void HandleRoleChange()
+    {
+        // Reload the entire page
+        NavigationManager.NavigateTo("/", true);
+    }
+
+    public async Task HandleValidSubmit(EditContext context)
+    {
+        try
+        {
+            // Create a HelpDeskTickets
+            HelpDeskTicket NewHelpDeskTickets =
+                new HelpDeskTicket();
+
+            // Set the values to the values entered
+            // in the form
+            NewHelpDeskTickets.TicketDate =
+                objHelpDeskTicket.TicketDate;
+            NewHelpDeskTickets.TicketDescription =
+                objHelpDeskTicket.TicketDescription;
+            NewHelpDeskTickets.TicketRequesterEmail =
+                objHelpDeskTicket.TicketRequesterEmail;
+            NewHelpDeskTickets.TicketStatus =
+                objHelpDeskTicket.TicketStatus;
+
+            NewHelpDeskTickets.HelpDeskTicketDetails =
+                new List<HelpDeskTicketDetail>();
+
+            // Create a new GUID for this Help Desk Ticket
+            NewHelpDeskTickets.TicketGuid =
+                System.Guid.NewGuid().ToString();
+
+            // Save the new Help Desk Ticket
+            var result =
+                SyncfusionHelpDeskService.CreateTicketAsync(DbFactory, NewHelpDeskTickets);
+
+            // Clear the form
+            objHelpDeskTicket = new HelpDeskTicketDTO() { TicketDate = DateTime.Now };
+
+            // Show the Toast
+            ToastContent = "Saved!";
+            await Task.Delay(100);
+            await this.ToastObj.ShowAsync();
+
+            // Send Email
+            await _EmailSender.SendEmail(
+                "Help Desk Ticket Created",
+                "", // No need to pass an email because it goes to Administrator
+                NewHelpDeskTickets.TicketGuid
+                );
+        }
+        catch (Exception ex)
+        {
+            ToastContent = ex.GetBaseException().Message;
+            await this.ToastObj.ShowAsync();
+        }
+    }
+} 

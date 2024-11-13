@@ -1,0 +1,133 @@
+﻿@using System.Security.Claims;
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using SyncfusionHelpDesk.Data
+@using SyncfusionHelpDesk.Models
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
+@inject SyncfusionHelpDeskService SyncfusionHelpDeskService
+
+<div>
+    <SfDropDownList Enabled="isAdmin" TItem="HelpDeskStatus" TValue="string"
+                    PopupHeight="230px"
+                    FloatLabelType="@FloatLabelType.Always"
+                    Placeholder="Ticket Status"
+                    @bind-Value="@SelectedTicket.TicketStatus"
+                    DataSource="@HelpDeskStatusData.Statuses">
+        <DropDownListEvents TItem="HelpDeskStatus" TValue="string" />
+        <DropDownListFieldSettings Text="Text" Value="ID" />
+    </SfDropDownList>
+</div>
+
+<div>
+    <SfDatePicker ID="TicketDate" Enabled="isAdmin"
+                  Placeholder="Ticket Date"
+                  FloatLabelType="@FloatLabelType.Always"
+                  @bind-Value="@SelectedTicket.TicketDate"
+                  Max="DateTime.Now"
+                  ShowClearButton="false">
+    </SfDatePicker>
+</div>
+
+<div>
+    <SfTextBox Enabled="isAdmin" Placeholder="Ticket Description"
+               FloatLabelType="@FloatLabelType.Always"
+               @bind-Value="@SelectedTicket.TicketDescription">
+    </SfTextBox>
+</div>
+
+<div>
+    <SfTextBox Enabled="isAdmin" Placeholder="Requester Email"
+               FloatLabelType="@FloatLabelType.Always"
+               @bind-Value="@SelectedTicket.TicketRequesterEmail">
+    </SfTextBox>
+</div>
+
+<br />
+
+<SfGrid @ref="GridRef" DataSource="@SelectedTicket.HelpDeskTicketDetails">
+    <GridColumns>
+        <GridColumn Field="TicketDetailDate"
+                    HeaderText="Date"
+                    Format="MM/dd/yyyy"
+                    TextAlign="TextAlign.Left"
+                    Width="150">
+        </GridColumn>
+        <GridColumn Field="TicketDescription"
+                    HeaderText="Description"
+                    TextAlign="TextAlign.Left"
+                    Width="300">
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+<br />
+
+<SfTextBox Placeholder="New Help Desk Ticket Detail"
+           @bind-Value="@NewHelpDeskTicketDetail">
+</SfTextBox>
+
+<br />
+<br />
+
+<SfButton CssClass="e-small e-success"
+          @onclick="AddHelpDeskTicketDetail">
+    Add Detail
+</SfButton>
+
+<br />
+<br />
+
+@code {
+#nullable disable
+    [Parameter]
+    public HelpDeskTicket SelectedTicket { get; set; }
+
+    private SfGrid<HelpDeskTicketDetail> GridRef;
+
+    private string ADMINISTRATION_ROLE = "Administrators";
+    private bool isAdmin = false;
+    private string NewHelpDeskTicketDetail = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var CurrentUser = await UserManager.FindByNameAsync(user.Identity.Name);
+
+            // If they are an Administrator
+            // Enable editing
+            isAdmin = await UserManager.IsInRoleAsync(CurrentUser, ADMINISTRATION_ROLE);
+        }
+    }
+
+    private void AddHelpDeskTicketDetail()
+    {
+        // Create New HelpDeskTicketDetails record
+        HelpDeskTicketDetail NewHelpDeskTicketDetails =
+            new HelpDeskTicketDetail();
+
+        NewHelpDeskTicketDetails.HelpDeskTicketId =
+            SelectedTicket.Id;
+
+        NewHelpDeskTicketDetails.TicketDetailDate =
+            DateTime.Now;
+
+        NewHelpDeskTicketDetails.TicketDescription =
+            NewHelpDeskTicketDetail;
+
+        // Add to collection
+        SelectedTicket.HelpDeskTicketDetails
+            .Add(NewHelpDeskTicketDetails);
+
+        // Clear the Text Box
+        NewHelpDeskTicketDetail = "";
+
+        // Update the Grid
+        GridRef.Refresh();
+    }
+} 

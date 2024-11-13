@@ -1,22 +1,31 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>aspnet-SyncfusionHelpDesk-C8D20383-63D9-4119-9FB9-1F3226B28CE1</UserSecretsId>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>aspnet-SyncfusionHelpDesk-C8D20383-63D9-4119-9FB9-1F3226B28CE1</UserSecretsId>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="SendGrid" Version="9.13.0" />
-    <PackageReference Include="Syncfusion.Blazor" Version="18.1.0.42" />
-    <PackageReference Include="System.Text.Json" Version="8.0.4" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="SendGrid" Version="9.29.3" />
+		<PackageReference Include="Syncfusion.Blazor.Core" Version="27.1.58" />
+		<PackageReference Include="Syncfusion.Blazor.Calendars" Version="27.1.58" />
+		<PackageReference Include="Syncfusion.Blazor.DataForm" Version="27.1.58" />
+		<PackageReference Include="Syncfusion.Blazor.DropDowns" Version="27.1.58" />
+		<PackageReference Include="Syncfusion.Blazor.Inputs" Version="27.1.58" />
+		<PackageReference Include="Syncfusion.Blazor.Notifications" Version="27.1.58" />
+		<PackageReference Include="Syncfusion.Blazor.SmartComponents" Version="27.1.58" />
+		<PackageReference Include="Syncfusion.Blazor.Themes" Version="27.1.58" />
+		<PackageReference Include="Syncfusion.Blazor.Grid" Version="27.1.58" />
+		<PackageReference Include="System.Text.Json" Version="9.0.0" />
+	</ItemGroup>
 
 </Project>

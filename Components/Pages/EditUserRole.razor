@@ -1,0 +1,74 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using SyncfusionHelpDesk.Data
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+@if (isLoggedIn)
+{
+    <div class="button-container">
+        <SfButton OnClick="@ToggleRole"
+        CssClass="e-secondary" Content="@buttonText"></SfButton>&nbsp;
+    </div>
+}
+<br />
+@code {
+#nullable disable
+    [Parameter]
+    public EventCallback<bool> OnRoleChanged { get; set; } // Expose event to parent
+
+    private string ADMINISTRATION_ROLE = "Administrators";
+    private string buttonText = "Loading...";
+    private ApplicationUser currentUser;
+    private bool isAdmin;
+    private bool isLoggedIn;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserAndRole();
+    }
+
+    private async Task LoadUserAndRole()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        isLoggedIn = user.Identity?.IsAuthenticated == true;
+
+        if (isLoggedIn)
+        {
+            currentUser = await UserManager.FindByNameAsync(user.Identity.Name);
+            isAdmin = await UserManager.IsInRoleAsync(currentUser, ADMINISTRATION_ROLE);
+
+            UpdateButtonText();
+        }
+    }
+
+    private void UpdateButtonText()
+    {
+        buttonText = isAdmin ? "Make me a normal user" : "Make me an administrator";
+    }
+
+    private async Task ToggleRole()
+    {
+        if (currentUser != null)
+        {
+            if (isAdmin)
+            {
+                await UserManager.RemoveFromRoleAsync(currentUser, ADMINISTRATION_ROLE);
+                isAdmin = false;
+            }
+            else
+            {
+                await UserManager.AddToRoleAsync(currentUser, ADMINISTRATION_ROLE);
+                isAdmin = true;
+            }
+
+            UpdateButtonText();
+            
+            // Raise event to notify parent
+            await OnRoleChanged.InvokeAsync(); 
+        }
+    }
+}
