@@ -9,14 +9,15 @@ using System.Threading.Tasks;
 
 namespace SyncfusionHelpDesk.Data
 {
-    public class SyncfusionHelpDeskService
+    public class SyncfusionHelpDeskService : IDisposable
     {
+        SyncfusionHelpDeskContext syncfusionHelpDeskContext;
         public SyncfusionHelpDeskService() { }
 
         public IQueryable<HelpDeskTicket>
             GetHelpDeskTickets(
-            IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory, 
-            bool IsAdmin, 
+            IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory,
+            bool IsAdmin,
             string paramEmail)
         {
             // Return all HelpDesk Tickets as IQueryable
@@ -26,17 +27,17 @@ namespace SyncfusionHelpDesk.Data
             // quicker to execute and we do not need
             // Entity Framework change tracking at this point
 
-            var _context = dbContextFactory.CreateDbContext();
+            syncfusionHelpDeskContext = dbContextFactory.CreateDbContext();
 
             if (IsAdmin)
             {
                 // Admin User
-                return _context.HelpDeskTickets.AsNoTracking();
+                return syncfusionHelpDeskContext.HelpDeskTickets.AsNoTracking();
             }
             else
             {
                 // Regular User
-                return _context.HelpDeskTickets
+                return syncfusionHelpDeskContext.HelpDeskTickets
                     .Where(x => x.TicketRequesterEmail == paramEmail)
                     .AsNoTracking();
             }
@@ -44,13 +45,13 @@ namespace SyncfusionHelpDesk.Data
 
         public async Task<HelpDeskTicket>
             GetHelpDeskTicketAsync(
-            IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory, 
+            IDbContextFactory<SyncfusionHelpDeskContext> dbContextFactory,
             string HelpDeskTicketGuid)
         {
             // Get the existing record
-            var _context = dbContextFactory.CreateDbContext();
+            syncfusionHelpDeskContext = dbContextFactory.CreateDbContext();
 
-            var ExistingTicket = await _context.HelpDeskTickets
+            var ExistingTicket = await syncfusionHelpDeskContext.HelpDeskTickets
                 .Include(x => x.HelpDeskTicketDetails)
                 .Where(x => x.TicketGuid == HelpDeskTicketGuid)
                 .AsNoTracking()
@@ -65,10 +66,10 @@ namespace SyncfusionHelpDesk.Data
             HelpDeskTicket newHelpDeskTickets)
         {
             // Add a new Help Desk Ticket
-            var _context = dbContextFactory.CreateDbContext();
+            syncfusionHelpDeskContext = dbContextFactory.CreateDbContext();
 
-            _context.HelpDeskTickets.Add(newHelpDeskTickets);
-            _context.SaveChanges();
+            syncfusionHelpDeskContext.HelpDeskTickets.Add(newHelpDeskTickets);
+            syncfusionHelpDeskContext.SaveChanges();
 
             return Task.FromResult(newHelpDeskTickets);
         }
@@ -79,10 +80,10 @@ namespace SyncfusionHelpDesk.Data
             HelpDeskTicket UpdatedHelpDeskTickets)
         {
             // Get the existing record
-            var _context = dbContextFactory.CreateDbContext();
+            syncfusionHelpDeskContext = dbContextFactory.CreateDbContext();
 
             var ExistingTicket =
-                _context.HelpDeskTickets
+                syncfusionHelpDeskContext.HelpDeskTickets
                 .Where(x => x.Id == UpdatedHelpDeskTickets.Id)
                 .FirstOrDefault();
 
@@ -121,13 +122,13 @@ namespace SyncfusionHelpDesk.Data
                             newHelpDeskTicketDetails.TicketDescription =
                                 item.TicketDescription;
 
-                            _context.HelpDeskTicketDetails
+                            syncfusionHelpDeskContext.HelpDeskTicketDetails
                                 .Add(newHelpDeskTicketDetails);
                         }
                     }
                 }
 
-                _context.SaveChanges();
+                syncfusionHelpDeskContext.SaveChanges();
             }
             else
             {
@@ -143,10 +144,10 @@ namespace SyncfusionHelpDesk.Data
             HelpDeskTicket DeleteHelpDeskTickets)
         {
             // Get the existing record
-            var _context = dbContextFactory.CreateDbContext();
+            syncfusionHelpDeskContext = dbContextFactory.CreateDbContext();
 
             var ExistingTicket =
-                _context.HelpDeskTickets
+                syncfusionHelpDeskContext.HelpDeskTickets
                 .Include(x => x.HelpDeskTicketDetails)
                 .Where(x => x.Id == DeleteHelpDeskTickets.Id)
                 .FirstOrDefault();
@@ -154,8 +155,8 @@ namespace SyncfusionHelpDesk.Data
             if (ExistingTicket != null)
             {
                 // Delete the Help Desk Ticket
-                _context.HelpDeskTickets.Remove(ExistingTicket);
-                _context.SaveChanges();
+                syncfusionHelpDeskContext.HelpDeskTickets.Remove(ExistingTicket);
+                syncfusionHelpDeskContext.SaveChanges();
             }
             else
             {
@@ -164,5 +165,8 @@ namespace SyncfusionHelpDesk.Data
 
             return Task.FromResult(true);
         }
+
+        // Ensures the context is disposed when the component is disposed
+        public void Dispose() => syncfusionHelpDeskContext?.Dispose();
     }
 }
