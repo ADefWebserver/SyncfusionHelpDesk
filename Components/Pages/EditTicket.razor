@@ -8,7 +8,20 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IDbContextFactory<SyncfusionHelpDeskContext> DbFactory
 @inject SyncfusionHelpDeskService SyncfusionHelpDeskService
+<!-- This style will show -->
+<!-- the entire content of TicketDescription -->
+<!-- on hover over the field -->
+<style>
+    .e-grid .e-rowcell {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
+        .e-grid .e-rowcell:hover {
+            overflow: visible;
+        }
+</style>
 <div>
     <SfDropDownList Enabled="isAdmin" TItem="HelpDeskStatus" TValue="string"
                     PopupHeight="230px"
