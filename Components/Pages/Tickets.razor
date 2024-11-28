@@ -56,7 +56,8 @@
                                     HeaderText="Status" TextAlign="@TextAlign.Left" Width="80">
                         </GridColumn>
                         <GridColumn Field=@nameof(HelpDeskTicket.TicketDate)
-                                    HeaderText="Date" TextAlign="@TextAlign.Left" Width="80">
+                                    HeaderText="Date" TextAlign="@TextAlign.Left" 
+                                    Format="d" Width="80">
                         </GridColumn>
                         <GridColumn Field=@nameof(HelpDeskTicket.TicketDescription)
                                     HeaderText="Description" TextAlign="@TextAlign.Left" Width="150">
